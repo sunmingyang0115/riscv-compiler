@@ -7,12 +7,12 @@
 class StringVisitor : public Visitor
 {
 private:
-    std::stringstream *m_stream{};
+    std::stringstream m_stream{};
 
 public:
     StringVisitor();
     ~StringVisitor();
-    std::string getString() const { return m_stream->str(); }
+    std::string getString() const { return m_stream.str(); }
     void visit(Literal *node) override;
     void visit(BinOp *node) override;
     void visit(Sequence *node) override;

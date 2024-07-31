@@ -29,7 +29,10 @@ Expression *Parser::build()
 {
     Expression *res = parse();
     if (!m_isValid || m_tk->hasNext())
+    {
+        delete res;
         return nullptr;
+    }
     return res;
 }
 
@@ -81,9 +84,10 @@ Expression *Parser::parseExp()
     }
     else if (s == "seq")
     {
-        std::vector<Expression*> *seq = new std::vector<Expression*>();
-        seq->push_back(parse());
-        seq->push_back(parse());
+        std::vector<Expression*> seq;
+        //  = new std::vector<Expression*>();
+        seq.push_back(parse());
+        seq.push_back(parse());
         return new Sequence(seq);
     }
     m_isValid = false;

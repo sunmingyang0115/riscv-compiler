@@ -49,15 +49,24 @@ public:
 struct Sequence : public Expression
 {
 private:
-    std::vector<Expression*> *m_expressions{};
+    std::vector<Expression*> m_expressions{};
 
 public:
-    Sequence(std::vector<Expression*> *expressions);
+    Sequence(std::vector<Expression*> expressions);
     ~Sequence();
     void accept(Visitor *v) override;
     void reject(Visitor *v) override;
     void visitChildren(Visitor *v) override;
 };
 
+
+// struct Variable : public Expression
+// {
+// private:
+//     std::string m_name{};
+    
+// public:
+//     Sequence(std::string name)
+// }
 
 #endif

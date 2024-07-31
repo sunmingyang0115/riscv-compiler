@@ -28,36 +28,34 @@ std::string getOperatorString(BinOp::Operator op) {
 }
 
 StringVisitor::StringVisitor()
-    : m_stream{new std::stringstream()}
 {
 }
 StringVisitor::~StringVisitor()
 {
-    delete m_stream;
 }
 void StringVisitor::visit(Literal *node) 
 {
-    *m_stream << node->getValue();
+    m_stream << node->getValue();
 }
 void StringVisitor::visit(BinOp *node) 
 {
     std::string op = getOperatorString(node->getOp());
-    *m_stream << "(" << op << " ";
+    m_stream << "(" << op << " ";
 }
 void StringVisitor::visit(Sequence *node)
 {
-    *m_stream << "(seq ";
+    m_stream << "(seq ";
 }
 void StringVisitor::leave(Literal *node)
 {
-    *m_stream << " ";
+    m_stream << " ";
 }
 void StringVisitor::leave(BinOp *node) 
 {
-    *m_stream << ") ";
+    m_stream << ") ";
 }
 void StringVisitor::leave(Sequence *node)
 {
-    *m_stream << ") ";
+    m_stream << ") ";
 }
 
