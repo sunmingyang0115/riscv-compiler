@@ -6,6 +6,7 @@ add_executable(${PROJECT_NAME}
     src/ast/BinOp.cc
     src/ast/Expression.cc
     src/ast/Literal.cc
+    src/ast/Sequence.cc
     src/lexer/Parser.cc
     src/lexer/Tokenizer.cc
     src/visitors/CompileVisitor.cc
