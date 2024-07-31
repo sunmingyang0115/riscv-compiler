@@ -79,6 +79,13 @@ Expression *Parser::parseExp()
         Expression *b = parse();
         return new BinOp(BinOp::Operator::DIVIDE, a, b);
     }
+    else if (s == "seq")
+    {
+        std::vector<Expression*> *seq = new std::vector<Expression*>();
+        seq->push_back(parse());
+        seq->push_back(parse());
+        return new Sequence(seq);
+    }
     m_isValid = false;
     return nullptr;
 }

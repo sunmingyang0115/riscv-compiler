@@ -63,6 +63,9 @@ void CompileVisitor::visit(Literal *node)
 void CompileVisitor::visit(BinOp *node)
 {
 }
+void CompileVisitor::visit(Sequence *node)
+{
+}
 void CompileVisitor::leave(Literal *node)
 {
 }
@@ -75,4 +78,7 @@ void CompileVisitor::leave(BinOp *node)
               << "sw t0, 4(sp)" << std::endl
               << "addi sp, sp, 4" << std::endl
               << std::endl;
+}
+void CompileVisitor::leave(Sequence *node)
+{
 }

@@ -44,11 +44,19 @@ void StringVisitor::visit(BinOp *node)
     std::string op = getOperatorString(node->getOp());
     *m_stream << "(" << op << " ";
 }
+void StringVisitor::visit(Sequence *node)
+{
+    *m_stream << "(seq ";
+}
 void StringVisitor::leave(Literal *node)
 {
     *m_stream << " ";
 }
 void StringVisitor::leave(BinOp *node) 
+{
+    *m_stream << ") ";
+}
+void StringVisitor::leave(Sequence *node)
 {
     *m_stream << ") ";
 }

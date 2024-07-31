@@ -4,6 +4,6 @@ void Expression::visitAll(Visitor *v)
 {
     accept(v);
     visitChildren(v);
-    leave(v);
+    reject(v);
 }
 Expression::~Expression() {}

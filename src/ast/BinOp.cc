@@ -17,4 +17,4 @@ void BinOp::visitChildren(Visitor* v)
 }
 
 void BinOp::accept(Visitor* v) {v->visit(this);}
-void BinOp::leave(Visitor* v) {v->leave(this);}
+void BinOp::reject(Visitor* v) {v->leave(this);}
