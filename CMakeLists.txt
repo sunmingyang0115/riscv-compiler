@@ -7,6 +7,9 @@ add_executable(${PROJECT_NAME}
     src/ast/Expression.cc
     src/ast/Literal.cc
     src/ast/Sequence.cc
+    src/ast/Variable.cc
+    src/ast/Declare.cc
+    src/ast/Set.cc
     src/lexer/Parser.cc
     src/lexer/Tokenizer.cc
     src/visitors/CompileVisitor.cc
@@ -14,4 +17,4 @@ add_executable(${PROJECT_NAME}
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-g ${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++14")

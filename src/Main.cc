@@ -6,16 +6,23 @@
 // #include "visitors/Visitor.hh"
 #include "visitors/StringVisitor.hh"
 #include "visitors/CompileVisitor.hh"
+#include "lexer/Tokenizer.hh"
 
 int main(int argc, char *argv[])
 {
-    std::unique_ptr<std::stringstream> ss = std::make_unique<std::stringstream>();
+    std::stringstream ss;
     for (int i = 1; i < argc; i++) {
-        *ss.get() << argv[i] << " ";
+        ss << argv[i] << " ";
     }
+    // Tokenizer tk{ss.str()};
+    // std::cout << "-\n";
+    // while (tk.hasNext())
+    // {
+    //     std::cout << "`" << tk.getNext() << "`" << std::endl;
+    // }
     
-    std::unique_ptr<Parser> parser = std::make_unique<Parser>(ss.get()->str());
-    Expression* e = parser.get()->build();
+    Parser parser{ss.str()};
+    Expression* e = parser.build();
 
     if (e == nullptr) {
         std::cout << "syntax error" << std::endl;

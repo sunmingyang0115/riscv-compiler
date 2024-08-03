@@ -2,6 +2,7 @@
 #define EXPRESSIONS_H
 #include "../visitors/Visitor.hh"
 #include <vector>
+#include <string>
 
 class Expression
 {
@@ -12,7 +13,6 @@ public:
     void visitAll(Visitor *v);
     virtual ~Expression();
 };
-
 
 struct Literal : public Expression
 {
@@ -30,7 +30,14 @@ public:
 
 struct BinOp : public Expression
 {
-public: enum Operator {PLUS, MINUS, TIMES, DIVIDE};
+public:
+    enum Operator
+    {
+        PLUS,
+        MINUS,
+        TIMES,
+        DIVIDE
+    };
 
 private:
     Operator m_op{};
@@ -49,24 +56,60 @@ public:
 struct Sequence : public Expression
 {
 private:
-    std::vector<Expression*> m_expressions{};
+    std::vector<Expression *> m_expressions{};
 
 public:
-    Sequence(std::vector<Expression*> expressions);
+    Sequence(std::vector<Expression *> expressions);
     ~Sequence();
     void accept(Visitor *v) override;
     void reject(Visitor *v) override;
     void visitChildren(Visitor *v) override;
 };
 
+struct Variable : public Expression
+{
+private:
+    std::string m_name{};
 
-// struct Variable : public Expression
-// {
-// private:
-//     std::string m_name{};
-    
-// public:
-//     Sequence(std::string name)
-// }
+public:
+    Variable(std::string name);
+    ~Variable();
+    std::string getName();
+    void accept(Visitor *v) override;
+    void reject(Visitor *v) override;
+    void visitChildren(Visitor *v) override;
+};
+
+struct Declare : public Expression
+{
+private:
+    std::string m_type{};
+    Expression *m_variable{};
+
+public:
+    Declare(std::string type, Expression *name);
+    ~Declare();
+    std::string getType();
+    Expression *getVariable();
+    void accept(Visitor *v) override;
+    void reject(Visitor *v) override;
+    void visitChildren(Visitor *v) override;
+};
+
+struct Set : public Expression
+{
+private:
+    Expression *m_variable{};
+    Expression *m_value{};
+
+public:
+    Set(Expression *variable, Expression *value);
+    ~Set();
+    Expression *getVariable();
+    Expression *getValue();
+    void accept(Visitor *v) override;
+    void reject(Visitor *v) override;
+    void visitChildren(Visitor *v) override;
+};
 
 #endif
