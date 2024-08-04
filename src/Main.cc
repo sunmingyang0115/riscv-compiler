@@ -30,12 +30,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::unique_ptr<StringVisitor> s = std::make_unique<StringVisitor>();
+    // std::unique_ptr<StringVisitor> s = std::make_unique<StringVisitor>();
+    // e->visitAll(s.get());
+    // std::cout << s.get()->getString() << std::endl;
+
     std::unique_ptr<CompileVisitor> comp = std::make_unique<CompileVisitor>();
-
-    e->visitAll(s.get());
-    std::cout << s.get()->getString() << std::endl;
-
     e->visitAll(comp.get());
     comp.get()->finishCompile("out.s");
 

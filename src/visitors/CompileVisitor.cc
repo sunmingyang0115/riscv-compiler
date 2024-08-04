@@ -91,7 +91,7 @@ void CompileVisitor::leave(BinOp *node)
     std::string instruction = getInstructionString(node->getOp());
     m_stream << "lw t0, 4(sp)" << std::endl
              << "lw t1, 8(sp)" << std::endl
-             << instruction << " t0, t0, t1" << std::endl
+             << instruction << " t0, t1, t0" << std::endl
              << "sw t0, 8(sp)" << std::endl
              << mutStack(4) << std::endl
              << std::endl;
