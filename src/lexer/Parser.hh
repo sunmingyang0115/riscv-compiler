@@ -11,9 +11,10 @@ class Parser
 {
 private:
     Expression *parseExp();
-    Expression *parseLit(std::string s);
+    Expression *parseLit();
     Expression *parse();
-    std::string safePopTokenizer();
+    std::string safePop();
+    std::string safePeek();
     Tokenizer m_tk;
     std::vector<std::string> m_bracketStack{};
     bool m_isValid{};

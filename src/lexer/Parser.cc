@@ -2,18 +2,26 @@
 #include "Tokenizer.hh"
 #include "../ast/Expressions.hh"
 #include <vector>
+#include "BracketUtil.hh"
 
-std::string OPEN_BRACKETS[3] = {"(", "[", "{"};
-std::string CLOSE_BRACKETS[3] = {")", "]", "}"};
-
-std::string Parser::safePopTokenizer()
+std::string Parser::safePop()
 {
     if (!m_tk.hasNext())
     {
         m_isValid = false;
         return "";
     }
-    return m_tk.getNext();
+    return m_tk.pop();
+}
+
+std::string Parser::safePeek()
+{
+    if (!m_tk.hasNext())
+    {
+        m_isValid = false;
+        return "";
+    }
+    return m_tk.peek();
 }
 
 Parser::Parser(std::string s)
@@ -36,25 +44,25 @@ Expression *Parser::build()
 
 Expression *Parser::parse()
 {
-    std::string s = safePopTokenizer();
+    std::string s = safePeek();
     for (int i = 0; i < OPEN_BRACKETS->length(); i++)
     {
         if (s == OPEN_BRACKETS[i])
         {
-            m_bracketStack.push_back(s);
+            m_bracketStack.push_back(safePop());
             Expression *res = parseExp();
-            m_isValid = (safePopTokenizer() == CLOSE_BRACKETS[i]) && m_isValid;
+            m_isValid = (safePop() == CLOSE_BRACKETS[i]) && m_isValid;
             m_bracketStack.pop_back();
             return res;
         }
     }
 
-    return parseLit(s);
+    return parseLit();
 }
 
 Expression *Parser::parseExp()
 {
-    std::string s = safePopTokenizer();
+    std::string s = safePop();
 
     if (s == "+")
     {
@@ -83,9 +91,10 @@ Expression *Parser::parseExp()
     else if (s == "seq")
     {
         std::vector<Expression *> seq;
-        //  = new std::vector<Expression*>();
-        seq.push_back(parse());
-        seq.push_back(parse());
+        while (!isCloseBracket(safePeek()) && safePeek() != "")
+        {
+            seq.push_back(parse());
+        } 
         return new Sequence(seq);
     }
     else if (s == "int")
@@ -111,8 +120,9 @@ bool isNumber(const std::string &s)
     return !s.empty() && it == s.end();
 }
 
-Expression *Parser::parseLit(std::string token)
+Expression *Parser::parseLit()
 {
+    std::string token = safePop();
     if (isNumber(token))
     {
         return new Literal(std::atoi(token.c_str()));

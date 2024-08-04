@@ -48,7 +48,7 @@ void StringVisitor::visit(Sequence *node)
 }
 void StringVisitor::visit(Variable *node)
 {
-    m_stream << node->getName();
+    m_stream << "(var " << node->getName() << " ";
 }
 void StringVisitor::visit(Declare *node)
 {
@@ -72,7 +72,7 @@ void StringVisitor::leave(Sequence *node)
 }
 void StringVisitor::leave(Variable *node)
 {
-    m_stream << " ";
+    m_stream << ") ";
 }
 void StringVisitor::leave(Declare *node)
 {

@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     for (int i = 1; i < argc; i++) {
         ss << argv[i] << " ";
     }
+    // std::cout << ss.str() << std::endl;
     // Tokenizer tk{ss.str()};
     // std::cout << "-\n";
     // while (tk.hasNext())

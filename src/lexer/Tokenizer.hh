@@ -11,13 +11,10 @@ private:
 
 public:
     Tokenizer(std::string s);
-    std::string getNext();
-    std::vector<std::string> getVector() const
-    {
-        return m_queue;
-    }
+    std::vector<std::string> getVector() const { return m_queue; }
     int hasNext();
+    std::string peek();
+    std::string pop();
 };
 
-// std::ostream &operator <<(std::ostream &out, const Tokenizer &v);
 #endif

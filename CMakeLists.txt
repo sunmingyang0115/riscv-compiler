@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
     src/ast/Set.cc
     src/lexer/Parser.cc
     src/lexer/Tokenizer.cc
+    src/lexer/BracketUtil.cc
     src/visitors/CompileVisitor.cc
     src/visitors/StringVisitor.cc)
 
