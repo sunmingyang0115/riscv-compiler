@@ -88,6 +88,36 @@ Expression *Parser::parseExp()
         Expression *b = parse();
         return new BinOp(BinOp::Operator::DIVIDE, a, b);
     }
+    else if (s == "=")
+    {
+        Expression *a = parse();
+        Expression *b = parse();
+        return new BinOp(BinOp::Operator::EQ, a, b);
+    }
+    else if (s == "<")
+    {
+        Expression *a = parse();
+        Expression *b = parse();
+        return new BinOp(BinOp::Operator::LT, a, b);
+    }
+    else if (s == ">")
+    {
+        Expression *a = parse();
+        Expression *b = parse();
+        return new BinOp(BinOp::Operator::GT, a, b);
+    }
+    else if (s == "<=")
+    {
+        Expression *a = parse();
+        Expression *b = parse();
+        return new BinOp(BinOp::Operator::LEQ, a, b);
+    }
+    else if (s == ">=")
+    {
+        Expression *a = parse();
+        Expression *b = parse();
+        return new BinOp(BinOp::Operator::GEQ, a, b);
+    }
     else if (s == "seq")
     {
         std::vector<Expression *> seq;
@@ -107,6 +137,17 @@ Expression *Parser::parseExp()
         Expression *var = parse();
         Expression *value = parse();
         return new Set(var, value);
+    }
+    else if (s == "while")
+    {
+        Expression *cond = parse();
+        std::vector<Expression *> seq;
+        while (!isCloseBracket(safePeek()) && safePeek() != "")
+        {
+            seq.push_back(parse());
+        } 
+        Expression *body = new Sequence(seq);
+        return new While(cond, body);
     }
     m_isValid = false;
     return nullptr;

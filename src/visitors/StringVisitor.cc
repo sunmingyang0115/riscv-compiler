@@ -20,6 +20,21 @@ std::string getOperatorString(BinOp::Operator op)
     case BinOp::Operator::DIVIDE:
         res = "/";
         break;
+    case BinOp::Operator::EQ:
+        res = "=";
+        break;
+    case BinOp::Operator::LT:
+        res = "<";
+        break;
+    case BinOp::Operator::GT:
+        res = ">";
+        break;
+    case BinOp::Operator::LEQ:
+        res = "<=";
+        break;
+    case BinOp::Operator::GEQ:
+        res = ">=";
+        break;
     default:
         res = nullptr;
         break;
@@ -58,6 +73,10 @@ void StringVisitor::visit(Set *node)
 {
     m_stream << "(set " << dynamic_cast<Variable *>(node->getVariable())->getName() << " ";
 }
+void StringVisitor::visit(While *node)
+{
+    m_stream << "(while ";
+}
 void StringVisitor::leave(Literal *node)
 {
     m_stream << " ";
@@ -82,3 +101,8 @@ void StringVisitor::leave(Set *node)
 {
     m_stream << ") ";
 }
+void StringVisitor::leave(While *node)
+{
+    m_stream << ") ";
+}
+

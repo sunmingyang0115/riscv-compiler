@@ -22,6 +22,21 @@ std::string getInstructionString(BinOp::Operator op)
     case BinOp::Operator::DIVIDE:
         res = "div";
         break;
+    case BinOp::Operator::EQ:
+        res = "=";
+        break;
+    case BinOp::Operator::LT:
+        res = "<";
+        break;
+    case BinOp::Operator::GT:
+        res = ">";
+        break;
+    case BinOp::Operator::LEQ:
+        res = "<=";
+        break;
+    case BinOp::Operator::GEQ:
+        res = ">=";
+        break;
     default:
         res = nullptr;
         break;
@@ -85,6 +100,9 @@ void CompileVisitor::visit(Declare *node)
              << std::endl;
 }
 void CompileVisitor::visit(Set *node) {}
+void CompileVisitor::visit(While *node)
+{
+}
 void CompileVisitor::leave(Literal *node) {}
 void CompileVisitor::leave(BinOp *node)
 {
@@ -106,4 +124,8 @@ void CompileVisitor::leave(Set *node)
     m_stream << "lw t0, 4(sp)" << std::endl
              << "sw t0, " << pos_offset << "(x1)" << std::endl
              << std::endl;
+}
+void CompileVisitor::leave(While *node)
+{
+
 }

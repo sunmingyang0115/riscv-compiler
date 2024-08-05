@@ -33,10 +33,17 @@ struct BinOp : public Expression
 public:
     enum Operator
     {
+        // arithmetic
         PLUS,
         MINUS,
         TIMES,
-        DIVIDE
+        DIVIDE,
+        // boolean
+        EQ,
+        LT,
+        GT,
+        LEQ,
+        GEQ
     };
 
 private:
@@ -110,6 +117,23 @@ public:
     void accept(Visitor *v) override;
     void reject(Visitor *v) override;
     void visitChildren(Visitor *v) override;
+};
+
+struct While : public Expression
+{
+private:
+    Expression* m_condition{};
+    Expression* m_body{};
+
+public:
+    While(Expression* condition, Expression* body);
+    ~While();
+    Expression *getCondition();
+    Expression *getBody();
+    void accept(Visitor *v) override;
+    void reject(Visitor *v) override;
+    void visitChildren(Visitor *v) override;
+
 };
 
 #endif

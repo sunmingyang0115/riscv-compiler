@@ -18,12 +18,14 @@ public:
     void visit(Variable *node) override;
     void visit(Declare *node) override;
     void visit(Set *node) override;
+    void visit(While *node) override;
     void leave(Literal *node) override;
     void leave(BinOp *node) override;
     void leave(Sequence *node) override;
     void leave(Variable *node) override;
     void leave(Declare *node) override;
     void leave(Set *node) override;
+    void leave(While *node) override;
 };
 
 #endif

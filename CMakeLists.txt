@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
     src/ast/Variable.cc
     src/ast/Declare.cc
     src/ast/Set.cc
+    src/ast/While.cc
     src/lexer/Parser.cc
     src/lexer/Tokenizer.cc
     src/lexer/BracketUtil.cc
