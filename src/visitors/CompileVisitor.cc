@@ -26,13 +26,21 @@ std::string opToInstruction(BinOp::Operator op)
         e = getUniqueLabel();
         return "beq t0,t1," + b + "\nadd t0,x0,x0\nj " + e + "\n" + b + ":\naddi t0,x0,1\n" + e + ":\n";
     case BinOp::Operator::LT:
-        return "slt t0,t0,t1";
+        b = getUniqueLabel();
+        e = getUniqueLabel();
+        return "slt t0,t0,t1\nbne t0,x0," + b + "\nadd t0,x0,x0\nj " + e + "\n" + b + ":\naddi t0,x0,1\n" + e + ":\n";
     case BinOp::Operator::GT:
-        return "";
+        b = getUniqueLabel();
+        e = getUniqueLabel();
+        return "slt t0,t1,t0\nbne t0,x0," + b + "\nadd t0,x0,x0\nj " + e + "\n" + b + ":\naddi t0,x0,1\n" + e + ":\n";
     case BinOp::Operator::LEQ:
-        return "";
+        b = getUniqueLabel();
+        e = getUniqueLabel();
+        return "slt t0,t1,t0\nbeq t0,x0," + b + "\nadd t0,x0,x0\nj " + e + "\n" + b + ":\naddi t0,x0,1\n" + e + ":\n";
     case BinOp::Operator::GEQ:
-        return "";
+        b = getUniqueLabel();
+        e = getUniqueLabel();
+        return "slt t0,t0,t1\nbeq t0,x0," + b + "\nadd t0,x0,x0\nj " + e + "\n" + b + ":\naddi t0,x0,1\n" + e + ":\n";
     default:
         return nullptr;
     }
