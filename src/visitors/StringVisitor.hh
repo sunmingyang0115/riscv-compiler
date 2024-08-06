@@ -14,7 +14,7 @@ public:
     std::string getString() const { return m_stream.str(); }
     void visit(Literal *node) override;
     void visit(BinOp *node) override;
-    // void visit(Sequence *node) override;
+    void visit(Sequence *node) override;
     // void visit(Variable *node) override;
     // void visit(Declare *node) override;
     // void visit(Set *node) override;

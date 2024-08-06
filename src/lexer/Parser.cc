@@ -80,6 +80,15 @@ Expression *Parser::parseExp(std::string token)
     #ifdef DEBUG_PARSER
         std::cout << "exp : " << token << std::endl;
     #endif
+    if (token == "seq")
+    {
+        std::vector<Expression *> v;
+        while (!isCloseBracket(safePeek()))
+        {
+            v.push_back(parse());
+        }
+        return new Sequence(v);
+    }
     BinOp::Operator binOpRes = strToOp(token);
     if (binOpRes != BinOp::Operator::SIZE)
     {

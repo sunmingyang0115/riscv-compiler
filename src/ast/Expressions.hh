@@ -51,24 +51,20 @@ private:
     Operator m_op{};
 
 public:
-    BinOp(Operator op, std::vector<Expression *> vals);
+    BinOp(Operator op, std::vector<Expression *> exprs);
     Operator getOp() const { return m_op; };
     ~BinOp();
     void accept(Visitor *v) override;
 };
 
-// struct Sequence : public Expression
-// {
-// private:
-//     std::vector<Expression *> m_expressions{};
+struct Sequence : public Expression
+{
 
-// public:
-//     Sequence(std::vector<Expression *> expressions);
-//     ~Sequence();
-//     void accept(Visitor *v) override;
-//     void reject(Visitor *v) override;
-//     void visitChildren(Visitor *v) override;
-// };
+public:
+    Sequence(std::vector<Expression *> exprs);
+    ~Sequence();
+    void accept(Visitor *v) override;
+};
 
 // struct Variable : public Expression
 // {

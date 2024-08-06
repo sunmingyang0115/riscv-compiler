@@ -57,20 +57,29 @@ void StringVisitor::visit(BinOp *node)
     std::string op = opToStr(node->getOp());
     m_stream << "(" << op << " ";
     int i = 0;
-    for (auto it = node->getChildren().begin(); it != node->getChildren().end(); ++it)
+    for (Expression *expr : node->getChildren())
     {
-        node->getChildren().at(i++)->accept(this);
-        if (i != node->getChildren().size())
+        expr->accept(this);
+        if (++i != node->getChildren().size())
         {
             m_stream << " ";
         }
     }
     m_stream << ")";
 }
-// void StringVisitor::visit(Sequence *node)
-// {
-//     // m_stream << "(seq ";
-// }
+void StringVisitor::visit(Sequence *node)
+{
+    int i = 0;
+    for (Expression *expr : node->getChildren())
+    {
+        expr->accept(this);
+        if (++i != node->getChildren().size())
+        {
+            m_stream << " ";
+        }
+    }
+    m_stream << ")";
+}
 // void StringVisitor::visit(Variable *node)
 // {
 //     // m_stream << "(var " << node->getName() << " ";

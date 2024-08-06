@@ -9,7 +9,7 @@ void tokenize(std::vector<std::string> &queue, std::string s);
 Tokenizer::Tokenizer(std::string s)
     : m_queue{}
 {
-    // s = "(seq " + s + ")";
+    s = "(seq " + s + ")";
     s = inflate(s);
     // std::cout << s;
     tokenize(m_queue, s);

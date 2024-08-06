@@ -86,12 +86,12 @@ void CompileVisitor::visit(Literal *node)
 }
 void CompileVisitor::visit(BinOp *node)
 {
-    int i = 0;
     // std::string instruction = ;
-    for (auto it = node->getChildren().begin(); it != node->getChildren().end(); ++it)
+    int i = 0;
+    for (Expression *expr : node->getChildren())
     {
-        node->getChildren().at(i++)->accept(this);
-        if (it != node->getChildren().begin())
+        expr->accept(this);
+        if (i++ != 0)
         {
             m_stream << "lw t0,8(sp)" << std::endl
                  << "lw t1,4(sp)" << std::endl
@@ -100,5 +100,13 @@ void CompileVisitor::visit(BinOp *node)
                  << mutStack(4) << std::endl
                  << std::endl;
         } 
+    }
+}
+
+void CompileVisitor::visit(Sequence *node)
+{
+    for (Expression *expr : node->getChildren())
+    {
+        expr->accept(this);
     }
 }

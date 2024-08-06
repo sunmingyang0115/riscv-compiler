@@ -1,7 +1,7 @@
 #include "Expressions.hh"
 
-BinOp::BinOp(Operator op, std::vector<Expression *> vals)
-: Expression{vals}, m_op(op)
+BinOp::BinOp(Operator op, std::vector<Expression *> exprs)
+: Expression{exprs}, m_op{op}
 {}
 
 BinOp::~BinOp(){}
