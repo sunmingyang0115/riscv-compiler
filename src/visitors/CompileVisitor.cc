@@ -48,7 +48,7 @@ std::string opToInstruction(BinOp::Operator op)
 
 std::string CompileVisitor::mutStack(int n)
 {
-    // m_offset += n;
+    m_offset += n;
     return "addi sp,sp," + std::to_string(n);
 }
 
@@ -94,12 +94,12 @@ void CompileVisitor::visit(BinOp *node)
         if (i++ != 0)
         {
             m_stream << "lw t0,8(sp)" << std::endl
-                 << "lw t1,4(sp)" << std::endl
-                 << opToInstruction(node->getOp())
-                 << "sw t0,8(sp)" << std::endl
-                 << mutStack(4) << std::endl
-                 << std::endl;
-        } 
+                     << "lw t1,4(sp)" << std::endl
+                     << opToInstruction(node->getOp())
+                     << "sw t0,8(sp)" << std::endl
+                     << mutStack(4) << std::endl
+                     << std::endl;
+        }
     }
 }
 
@@ -109,4 +109,45 @@ void CompileVisitor::visit(Sequence *node)
     {
         expr->accept(this);
     }
+}
+
+void CompileVisitor::visit(Variable *node)
+{
+    std::string name = node->getName();
+    m_stream << "lw t0," << m_varlist[name] << "(x1)" << std::endl
+             << "sw t0,0(sp)" << std::endl
+             << mutStack(-4) << std::endl
+             << std::endl;
+}
+
+void CompileVisitor::visit(Declare *node)
+{
+    std::string name = static_cast<Variable *>(node->getChildren().at(0))->getName();
+    m_varlist[name] = m_offset;
+    m_stream << mutStack(-4) << std::endl
+             << std::endl;
+}
+
+void CompileVisitor::visit(Set *node)
+{
+    node->getChildren().at(1)->accept(this);
+    std::string name = static_cast<Variable *>(node->getChildren().at(0))->getName();
+    m_stream << "lw t0,4(sp)" << std::endl
+             << "sw t0," << m_varlist[name] << "(x1)" << std::endl
+             << std::endl;
+}
+
+void CompileVisitor::visit(While *node)
+{
+    std::string b = getUniqueLabel();
+    std::string e = getUniqueLabel();
+    m_stream << b << ":" << std::endl;
+    node->getChildren().at(0)->accept(this);
+    // if 0 then jmp to e
+    m_stream << "lw t0,4(sp)" << std::endl
+             << "beqz t0," << e << std::endl;
+    node->getChildren().at(1)->accept(this);
+    m_stream << "j " << b << std::endl
+             << e << ":" << std::endl
+             << std::endl;
 }

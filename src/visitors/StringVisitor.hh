@@ -15,10 +15,10 @@ public:
     void visit(Literal *node) override;
     void visit(BinOp *node) override;
     void visit(Sequence *node) override;
-    // void visit(Variable *node) override;
-    // void visit(Declare *node) override;
-    // void visit(Set *node) override;
-    // void visit(While *node) override;
+    void visit(Variable *node) override;
+    void visit(Declare *node) override;
+    void visit(Set *node) override;
+    void visit(While *node) override;
 };
 
 #endif

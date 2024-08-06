@@ -66,67 +66,44 @@ public:
     void accept(Visitor *v) override;
 };
 
-// struct Variable : public Expression
-// {
-// private:
-//     std::string m_name{};
+struct Variable : public Expression
+{
+private:
+    std::string m_name{};
 
-// public:
-//     Variable(std::string name);
-//     ~Variable();
-//     std::string getName();
-//     void accept(Visitor *v) override;
-//     void reject(Visitor *v) override;
-//     void visitChildren(Visitor *v) override;
-// };
+public:
+    Variable(std::string name);
+    ~Variable();
+    std::string getName() const { return m_name; };
+    void accept(Visitor *v) override;
+};
 
-// struct Declare : public Expression
-// {
-// private:
-//     std::string m_type{};
-//     Expression *m_variable{};
+struct Declare : public Expression
+{
+private:
+    std::string m_type{};
 
-// public:
-//     Declare(std::string type, Expression *name);
-//     ~Declare();
-//     std::string getType();
-//     Expression *getVariable();
-//     void accept(Visitor *v) override;
-//     void reject(Visitor *v) override;
-//     void visitChildren(Visitor *v) override;
-// };
+public:
+    Declare(std::string type, Expression *var);
+    ~Declare();
+    std::string getType() const { return m_type; }
+    void accept(Visitor *v) override;
+};
 
-// struct Set : public Expression
-// {
-// private:
-//     Expression *m_variable{};
-//     Expression *m_value{};
+struct Set : public Expression
+{
+public:
+    Set(Expression *variable, Expression *value);
+    ~Set();
+    void accept(Visitor *v) override;
+};
 
-// public:
-//     Set(Expression *variable, Expression *value);
-//     ~Set();
-//     Expression *getVariable();
-//     Expression *getValue();
-//     void accept(Visitor *v) override;
-//     void reject(Visitor *v) override;
-//     void visitChildren(Visitor *v) override;
-// };
-
-// struct While : public Expression
-// {
-// private:
-//     Expression* m_condition{};
-//     Expression* m_body{};
-
-// public:
-//     While(Expression* condition, Expression* body);
-//     ~While();
-//     Expression *getCondition();
-//     Expression *getBody();
-//     void accept(Visitor *v) override;
-//     void reject(Visitor *v) override;
-//     void visitChildren(Visitor *v) override;
-
-// };
+struct While : public Expression
+{
+public:
+    While(Expression* condition, Expression* body);
+    ~While();
+    void accept(Visitor *v) override;
+};
 
 #endif

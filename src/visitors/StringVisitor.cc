@@ -69,6 +69,7 @@ void StringVisitor::visit(BinOp *node)
 }
 void StringVisitor::visit(Sequence *node)
 {
+    m_stream << "(seq ";
     int i = 0;
     for (Expression *expr : node->getChildren())
     {
@@ -80,20 +81,25 @@ void StringVisitor::visit(Sequence *node)
     }
     m_stream << ")";
 }
-// void StringVisitor::visit(Variable *node)
-// {
-//     // m_stream << "(var " << node->getName() << " ";
-// }
-// void StringVisitor::visit(Declare *node)
-// {
-//     // m_stream << "(int " << dynamic_cast<Variable *>(node->getVariable())->getName() << " ";
-// }
-// void StringVisitor::visit(Set *node)
-// {
-//     // m_stream << "(set " << dynamic_cast<Variable *>(node->getVariable())->getName() << " ";
-// }
-// void StringVisitor::visit(While *node)
-// {
-//     // m_stream << "(while ";
-// }
-
+void StringVisitor::visit(Variable *node)
+{
+    m_stream << "(var " << node->getName() << ")";
+}
+void StringVisitor::visit(Declare *node)
+{
+    m_stream << "(int " << static_cast<Variable *>(node->getChildren().at(0))->getName() << ")";
+}
+void StringVisitor::visit(Set *node)
+{
+    m_stream << "(set " << static_cast<Variable *>(node->getChildren().at(0))->getName() << " ";
+    node->getChildren().at(1)->accept(this);
+    m_stream << ")";
+}
+void StringVisitor::visit(While *node)
+{
+    m_stream << "(while ";
+    node->getChildren().at(0)->accept(this);
+    m_stream << " ";
+    node->getChildren().at(1)->accept(this);
+    m_stream << ")";
+}
