@@ -10,13 +10,12 @@ class Expression;
 class Parser
 {
 private:
-    Expression *parseExp();
-    Expression *parseLit();
+    Expression *parseExp(std::string token);
+    Expression *parseLit(std::string token);
     Expression *parse();
     std::string safePop();
     std::string safePeek();
     Tokenizer m_tk;
-    std::vector<std::string> m_bracketStack{};
     bool m_isValid{};
 
 public:

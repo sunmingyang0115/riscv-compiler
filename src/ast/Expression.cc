@@ -1,9 +1,14 @@
 #include "Expressions.hh"
+#include <stdexcept>
 
-void Expression::visitAll(Visitor *v)
+Expression::Expression(std::vector<Expression *> children)
+: m_children{children} {}
+
+Expression::Expression() : m_children{nullptr} {};
+Expression::~Expression()
 {
-    accept(v);
-    visitChildren(v);
-    reject(v);
+    for (auto it = m_children.begin(); it != m_children.end(); ++it)
+    {
+        delete *it;
+    }
 }
-Expression::~Expression() {}

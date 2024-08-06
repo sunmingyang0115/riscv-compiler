@@ -33,3 +33,14 @@ bool isCloseBracket(char c)
     std::string s{c};
     return isCloseBracket(s);
 }
+bool isMatchingBracketPairs(std::string open, std::string close)
+{
+    for (int i = 0; i < OPEN_BRACKETS->length(); i++)
+    {
+        if (OPEN_BRACKETS[i] == open && CLOSE_BRACKETS[i] == close)
+        {
+            return true;
+        }
+    }
+    return false;
+}

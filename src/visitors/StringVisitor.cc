@@ -3,7 +3,7 @@
 #include "StringVisitor.hh"
 #include "../ast/Expressions.hh"
 
-std::string getOperatorString(BinOp::Operator op)
+std::string opToStr(BinOp::Operator op)
 {
     std::string res;
     switch (op)
@@ -54,55 +54,37 @@ void StringVisitor::visit(Literal *node)
 }
 void StringVisitor::visit(BinOp *node)
 {
-    std::string op = getOperatorString(node->getOp());
+    std::string op = opToStr(node->getOp());
     m_stream << "(" << op << " ";
+    int i = 0;
+    for (auto it = node->getChildren().begin(); it != node->getChildren().end(); ++it)
+    {
+        node->getChildren().at(i++)->accept(this);
+        if (i != node->getChildren().size())
+        {
+            m_stream << " ";
+        }
+    }
+    m_stream << ")";
 }
-void StringVisitor::visit(Sequence *node)
-{
-    m_stream << "(seq ";
-}
-void StringVisitor::visit(Variable *node)
-{
-    m_stream << "(var " << node->getName() << " ";
-}
-void StringVisitor::visit(Declare *node)
-{
-    m_stream << "(int " << dynamic_cast<Variable *>(node->getVariable())->getName() << " ";
-}
-void StringVisitor::visit(Set *node)
-{
-    m_stream << "(set " << dynamic_cast<Variable *>(node->getVariable())->getName() << " ";
-}
-void StringVisitor::visit(While *node)
-{
-    m_stream << "(while ";
-}
-void StringVisitor::leave(Literal *node)
-{
-    m_stream << " ";
-}
-void StringVisitor::leave(BinOp *node)
-{
-    m_stream << ") ";
-}
-void StringVisitor::leave(Sequence *node)
-{
-    m_stream << ") ";
-}
-void StringVisitor::leave(Variable *node)
-{
-    m_stream << ") ";
-}
-void StringVisitor::leave(Declare *node)
-{
-    m_stream << ") ";
-}
-void StringVisitor::leave(Set *node)
-{
-    m_stream << ") ";
-}
-void StringVisitor::leave(While *node)
-{
-    m_stream << ") ";
-}
+// void StringVisitor::visit(Sequence *node)
+// {
+//     // m_stream << "(seq ";
+// }
+// void StringVisitor::visit(Variable *node)
+// {
+//     // m_stream << "(var " << node->getName() << " ";
+// }
+// void StringVisitor::visit(Declare *node)
+// {
+//     // m_stream << "(int " << dynamic_cast<Variable *>(node->getVariable())->getName() << " ";
+// }
+// void StringVisitor::visit(Set *node)
+// {
+//     // m_stream << "(set " << dynamic_cast<Variable *>(node->getVariable())->getName() << " ";
+// }
+// void StringVisitor::visit(While *node)
+// {
+//     // m_stream << "(while ";
+// }
 

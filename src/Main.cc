@@ -3,39 +3,54 @@
 #include "lexer/Parser.hh"
 #include <sstream>
 #include "ast/Expressions.hh"
-// #include "visitors/Visitor.hh"
+#include <fstream>
 #include "visitors/StringVisitor.hh"
 #include "visitors/CompileVisitor.hh"
 #include "lexer/Tokenizer.hh"
 
+
+
 int main(int argc, char *argv[])
 {
-    std::stringstream ss;
+    std::string path;
     for (int i = 1; i < argc; i++) {
-        ss << argv[i] << " ";
+        std::string arg = argv[i];
+        if (arg == "-f")
+        {
+            path = argv[++i];
+        }
     }
-    // std::cout << ss.str() << std::endl;
-    // Tokenizer tk{ss.str()};
-    // std::cout << "-\n";
-    // while (tk.hasNext())
-    // {
-    //     std::cout << "`" << tk.getNext() << "`" << std::endl;
-    // }
+    std::ifstream file{path};
+    if (!file.is_open())
+    {
+        std::cerr << "Failed to open " << path << std::endl;
+        return 1;
+    }
+    std::stringstream ss;
+    std::string line;
+    while (getline(file, line)) {
+        ss << line << std::endl;
+    }
+    file.close();
     
     Parser parser{ss.str()};
     Expression* e = parser.build();
+    // std::vector<Expression *> v;
+    // v.push_back(new Literal(5));
+    // v.push_back(new Literal(2));
+    // Expression *e = new BinOp(BinOp::Operator::DIVIDE, v);
 
     if (e == nullptr) {
-        std::cout << "syntax error" << std::endl;
+        std::cerr << "syntax error" << std::endl;
         return 1;
     }
 
     std::unique_ptr<StringVisitor> s = std::make_unique<StringVisitor>();
-    e->visitAll(s.get());
+    e->accept(s.get());
     std::cout << s.get()->getString() << std::endl;
 
     std::unique_ptr<CompileVisitor> comp = std::make_unique<CompileVisitor>();
-    e->visitAll(comp.get());
+    e->accept(comp.get());
     comp.get()->finishCompile("out.s");
 
     delete e;

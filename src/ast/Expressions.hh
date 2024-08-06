@@ -6,11 +6,14 @@
 
 class Expression
 {
+private:
+    std::vector<Expression *> m_children;
+
 public:
+    Expression(std::vector<Expression *> children);
+    Expression();
+    std::vector<Expression *> getChildren() const { return m_children; }
     virtual void accept(Visitor *v) = 0;
-    virtual void reject(Visitor *v) = 0;
-    virtual void visitChildren(Visitor *v) = 0;
-    void visitAll(Visitor *v);
     virtual ~Expression();
 };
 
@@ -24,10 +27,7 @@ public:
     int getValue() const { return m_number; }
     ~Literal();
     void accept(Visitor *v) override;
-    void reject(Visitor *v) override;
-    void visitChildren(Visitor *v) override;
 };
-
 struct BinOp : public Expression
 {
 public:
@@ -43,97 +43,94 @@ public:
         LT,
         GT,
         LEQ,
-        GEQ
+        GEQ,
+        SIZE    // size of BinOp; also used as sential values
     };
 
 private:
     Operator m_op{};
-    Expression *m_left{};
-    Expression *m_right{};
 
 public:
-    BinOp(Operator op, Expression *left, Expression *right);
+    BinOp(Operator op, std::vector<Expression *> vals);
     Operator getOp() const { return m_op; };
     ~BinOp();
     void accept(Visitor *v) override;
-    void reject(Visitor *v) override;
-    void visitChildren(Visitor *v) override;
 };
 
-struct Sequence : public Expression
-{
-private:
-    std::vector<Expression *> m_expressions{};
+// struct Sequence : public Expression
+// {
+// private:
+//     std::vector<Expression *> m_expressions{};
 
-public:
-    Sequence(std::vector<Expression *> expressions);
-    ~Sequence();
-    void accept(Visitor *v) override;
-    void reject(Visitor *v) override;
-    void visitChildren(Visitor *v) override;
-};
+// public:
+//     Sequence(std::vector<Expression *> expressions);
+//     ~Sequence();
+//     void accept(Visitor *v) override;
+//     void reject(Visitor *v) override;
+//     void visitChildren(Visitor *v) override;
+// };
 
-struct Variable : public Expression
-{
-private:
-    std::string m_name{};
+// struct Variable : public Expression
+// {
+// private:
+//     std::string m_name{};
 
-public:
-    Variable(std::string name);
-    ~Variable();
-    std::string getName();
-    void accept(Visitor *v) override;
-    void reject(Visitor *v) override;
-    void visitChildren(Visitor *v) override;
-};
+// public:
+//     Variable(std::string name);
+//     ~Variable();
+//     std::string getName();
+//     void accept(Visitor *v) override;
+//     void reject(Visitor *v) override;
+//     void visitChildren(Visitor *v) override;
+// };
 
-struct Declare : public Expression
-{
-private:
-    std::string m_type{};
-    Expression *m_variable{};
+// struct Declare : public Expression
+// {
+// private:
+//     std::string m_type{};
+//     Expression *m_variable{};
 
-public:
-    Declare(std::string type, Expression *name);
-    ~Declare();
-    std::string getType();
-    Expression *getVariable();
-    void accept(Visitor *v) override;
-    void reject(Visitor *v) override;
-    void visitChildren(Visitor *v) override;
-};
+// public:
+//     Declare(std::string type, Expression *name);
+//     ~Declare();
+//     std::string getType();
+//     Expression *getVariable();
+//     void accept(Visitor *v) override;
+//     void reject(Visitor *v) override;
+//     void visitChildren(Visitor *v) override;
+// };
 
-struct Set : public Expression
-{
-private:
-    Expression *m_variable{};
-    Expression *m_value{};
+// struct Set : public Expression
+// {
+// private:
+//     Expression *m_variable{};
+//     Expression *m_value{};
 
-public:
-    Set(Expression *variable, Expression *value);
-    ~Set();
-    Expression *getVariable();
-    Expression *getValue();
-    void accept(Visitor *v) override;
-    void reject(Visitor *v) override;
-    void visitChildren(Visitor *v) override;
-};
+// public:
+//     Set(Expression *variable, Expression *value);
+//     ~Set();
+//     Expression *getVariable();
+//     Expression *getValue();
+//     void accept(Visitor *v) override;
+//     void reject(Visitor *v) override;
+//     void visitChildren(Visitor *v) override;
+// };
 
-struct While : public Expression
-{
-private:
-    Expression* m_condition{};
-    Expression* m_body{};
+// struct While : public Expression
+// {
+// private:
+//     Expression* m_condition{};
+//     Expression* m_body{};
 
-public:
-    While(Expression* condition, Expression* body);
-    ~While();
-    Expression *getCondition();
-    Expression *getBody();
-    void accept(Visitor *v) override;
-    void reject(Visitor *v) override;
-    void visitChildren(Visitor *v) override;
+// public:
+//     While(Expression* condition, Expression* body);
+//     ~While();
+//     Expression *getCondition();
+//     Expression *getBody();
+//     void accept(Visitor *v) override;
+//     void reject(Visitor *v) override;
+//     void visitChildren(Visitor *v) override;
 
-};
+// };
 
 #endif
