@@ -103,3 +103,13 @@ void StringVisitor::visit(While *node)
     node->getChildren().at(1)->accept(this);
     m_stream << ")";
 }
+void StringVisitor::visit(If *node)
+{
+    m_stream << "(if ";
+    node->getChildren().at(0)->accept(this);
+    m_stream << " ";
+    node->getChildren().at(1)->accept(this);
+    m_stream << " ";
+    node->getChildren().at(2)->accept(this);
+    m_stream << ")";
+}

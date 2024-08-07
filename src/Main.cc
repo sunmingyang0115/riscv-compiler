@@ -7,11 +7,13 @@
 #include "visitors/StringVisitor.hh"
 #include "visitors/CompileVisitor.hh"
 #include "lexer/Tokenizer.hh"
+#include "visitors/AsmBuilder.hh"
 
 
 
 int main(int argc, char *argv[])
 {
+    
     std::string path;
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];

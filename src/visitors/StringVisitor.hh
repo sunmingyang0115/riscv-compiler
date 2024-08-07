@@ -19,6 +19,7 @@ public:
     void visit(Declare *node) override;
     void visit(Set *node) override;
     void visit(While *node) override;
+    void visit(If *node) override;
 };
 
 #endif

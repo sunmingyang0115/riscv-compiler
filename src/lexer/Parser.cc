@@ -135,6 +135,13 @@ Expression *Parser::parseExp(std::string token)
         Expression *body = parseExp("seq");
         return new While(cond, body);
     }
+    else if (token == "if")
+    {
+        Expression *cond = parse();
+        Expression *ifthen = parse();
+        Expression *ifelse = parse();
+        return new If(cond, ifthen, ifelse);
+    }
     else    // binOp
     {
         BinOp::Operator binOpRes = strToOp(token);

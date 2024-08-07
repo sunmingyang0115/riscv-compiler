@@ -106,4 +106,12 @@ public:
     void accept(Visitor *v) override;
 };
 
+struct If : public Expression
+{
+public:
+    If(Expression* cond, Expression* ifthen, Expression* ifelse);
+    ~If();
+    void accept(Visitor *v) override;
+};
+
 #endif

@@ -1,13 +1,16 @@
 #ifndef COMPILEVISITOR_H
 #define COMPILEVISITOR_H
-#include <sstream>
 #include <map>
+#include "../ast/Expressions.hh"
 #include "Visitor.hh"
+#include "AsmBuilder.hh"
+
 class CompileVisitor : public Visitor
 {
 private:
-    std::stringstream m_stream{};
+    AsmBuilder m_build{};
     std::string mutStack(int n);
+    void opToInstruction(BinOp::Operator op);
     int m_offset{0};
     std::map<std::string, int> m_varlist{};
 
@@ -22,6 +25,7 @@ public:
     void visit(Declare *node) override;
     void visit(Set *node) override;
     void visit(While *node) override;
+    void visit(If *node) override;
 };
 
 #endif
