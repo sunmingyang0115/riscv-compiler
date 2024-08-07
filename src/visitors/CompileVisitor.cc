@@ -17,13 +17,13 @@ void CompileVisitor::opToInstruction(BinOp::Operator op)
         m_build << "add t0, t0, t1";
         break;
     case BinOp::Operator::MINUS:
-        m_build << "sub t0, t0, t1\n";
+        m_build << "sub t0, t0, t1";
         break;
     case BinOp::Operator::TIMES:
-        m_build << "mul t0, t0, t1\n";
+        m_build << "mul t0, t0, t1";
         break;
     case BinOp::Operator::DIVIDE:
-        m_build << "div t0, t0, t1\n";
+        m_build << "div t0, t0, t1";
         break;
     case BinOp::Operator::EQ:
         b = getUniqueLabel();

@@ -107,7 +107,7 @@ Expression *Parser::parse()
 Expression *Parser::parseExp(std::string token)
 {
 #ifdef DEBUG_PARSER
-    std::cout << "exp : " << token << std::endl;
+    std::cout << "exp : " << token << "\n";
 #endif
     if (token == "seq")
     {
@@ -180,7 +180,7 @@ bool isNumber(const std::string &s)
 Expression *Parser::parseLit(std::string token)
 {
 #ifdef DEBUG_PARSER
-    std::cout << "lit : " << token << std::endl;
+    std::cout << "lit : " << token << "\n";
 #endif
     if (isNumber(token))
     {

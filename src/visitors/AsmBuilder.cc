@@ -6,14 +6,6 @@ AsmBuilder::AsmBuilder()
 
 AsmBuilder::~AsmBuilder() {}
 
-// std::string AsmBuilder::spaces(int n)
-// {
-//     std::string s;
-//     for (int i = 0; i < n; i++)
-//     {
-
-//     }
-// }
 
 AsmBuilder &AsmBuilder::operator<<(std::string line)
 {
@@ -23,7 +15,6 @@ AsmBuilder &AsmBuilder::operator<<(std::string line)
 
 void AsmBuilder::push(std::string s)
 {
-    // std::cout << s << "\n";
     if (s[s.length() - 1] == ':') // label
     {
         m_stream << s;

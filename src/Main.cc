@@ -25,13 +25,13 @@ int main(int argc, char *argv[])
     std::ifstream file{path};
     if (!file.is_open())
     {
-        std::cerr << "Failed to open " << path << std::endl;
+        std::cerr << "Failed to open " << path << "\n";
         return 1;
     }
     std::stringstream ss;
     std::string line;
     while (getline(file, line)) {
-        ss << line << std::endl;
+        ss << line << "\n";
     }
     file.close();
     
@@ -43,13 +43,13 @@ int main(int argc, char *argv[])
     // Expression *e = new BinOp(BinOp::Operator::DIVIDE, v);
 
     if (e == nullptr) {
-        std::cerr << "syntax error" << std::endl;
+        std::cerr << "syntax error\n";
         return 1;
     }
 
     std::unique_ptr<StringVisitor> s = std::make_unique<StringVisitor>();
     e->accept(s.get());
-    std::cout << s.get()->getString() << std::endl;
+    std::cout << s.get()->getString() << "\n";
 
     std::unique_ptr<CompileVisitor> comp = std::make_unique<CompileVisitor>();
     e->accept(comp.get());
