@@ -114,4 +114,25 @@ public:
     void accept(Visitor *v) override;
 };
 
+struct Void : public Expression
+{
+public:
+    Void();
+    ~Void();
+    void accept(Visitor *v) override;
+};
+
+struct Function : public Expression
+{
+private:
+    std::string m_name;
+    std::string m_retType; 
+public:
+    Function(std::string name, std::string retType, Expression* args, Expression* body);
+    std::string getName() const { return m_name; }
+    std::string getRetType() const {return m_retType; }
+    ~Function();
+    void accept(Visitor *v) override;
+};
+
 #endif

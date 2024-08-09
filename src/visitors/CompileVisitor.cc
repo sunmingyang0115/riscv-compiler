@@ -191,3 +191,5 @@ void CompileVisitor::visit(If *node)
     node->getChildren().at(2)->accept(this);
     m_build << end + ":";
 }
+void CompileVisitor::visit(Void *node) {};
+void CompileVisitor::visit(Function *node) {};  // not impl

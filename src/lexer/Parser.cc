@@ -109,7 +109,21 @@ Expression *Parser::parseExp(std::string token)
 #ifdef DEBUG_PARSER
     std::cout << "exp : " << token << "\n";
 #endif
-    if (token == "seq")
+    if (token == "int" && isOpenBracket(safePeek()))
+    {
+        std::string open = safePop();
+        std::string name = safePop();
+        Expression* args = parseExp("seq");
+        std::string close = safePop();
+        if (!isMatchingBracketPairs(open, close))
+        {
+            m_isValid = false;
+            return nullptr;
+        }
+        Expression* body = parseExp("seq");
+        return new Function(name, token, args, body);
+    }
+    else if (token == "seq")
     {
         std::vector<Expression *> v;
         while (!isCloseBracket(safePeek()))
@@ -182,7 +196,11 @@ Expression *Parser::parseLit(std::string token)
 #ifdef DEBUG_PARSER
     std::cout << "lit : " << token << "\n";
 #endif
-    if (isNumber(token))
+    if (token == "void")
+    {
+        return new Void();
+    }
+    else if (isNumber(token))
     {
         return new Literal(std::atoi(token.c_str()));
     }

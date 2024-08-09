@@ -9,6 +9,8 @@ struct Set;
 struct Declare;
 struct While;
 struct If;
+struct Void;
+struct Function;
 
 class Visitor
 {
@@ -21,6 +23,8 @@ public:
     virtual void visit(Set *node) = 0;
     virtual void visit(While *node) = 0;
     virtual void visit(If *node) = 0;
+    virtual void visit(Void *node) = 0;
+    virtual void visit(Function *node) = 0;
     virtual ~Visitor() {};
 };
 

@@ -12,6 +12,8 @@ add_executable(${PROJECT_NAME}
     src/ast/Set.cc
     src/ast/While.cc
     src/ast/If.cc
+    src/ast/Void.cc
+    src/ast/Function.cc
     src/lexer/Parser.cc
     src/lexer/Tokenizer.cc
     src/lexer/BracketUtil.cc

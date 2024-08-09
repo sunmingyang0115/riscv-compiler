@@ -113,3 +113,11 @@ void StringVisitor::visit(If *node)
     node->getChildren().at(2)->accept(this);
     m_stream << ")";
 }
+void StringVisitor::visit(Void *node) {}
+void StringVisitor::visit(Function *node) {
+    m_stream << "(" << node->getRetType() << " [" << node->getName() << " ";
+    node->getChildren().at(0)->accept(this);
+    m_stream << "] ";
+    node->getChildren().at(1)->accept(this);
+    m_stream << ")";
+}

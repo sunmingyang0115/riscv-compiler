@@ -20,6 +20,8 @@ public:
     void visit(Set *node) override;
     void visit(While *node) override;
     void visit(If *node) override;
+    void visit(Void *node) override;
+    void visit(Function *node) override;
 };
 
 #endif
