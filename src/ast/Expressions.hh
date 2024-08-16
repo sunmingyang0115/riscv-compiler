@@ -30,6 +30,7 @@ enum BinOp {
 };
 
 struct Expression {
+    virtual ~Expression() {};
 };
 struct Literal : Expression {
 public:
@@ -45,7 +46,7 @@ public:
 };
 struct Do : Expression {
     std::vector<Expression *> expressions;
-    Do(std::vector<Expression *> expressions) : expressions{expressions} {};
+    Do(std::vector<Expression *> &expressions) : expressions{expressions} {};
     ~Do();
 };
 struct While : Expression {
@@ -83,7 +84,7 @@ struct DefFun : Expression {
     std::vector<std::string> argNames;
     std::vector<DataType> argTypes;
     Expression *body;
-    DefFun(DataType returnType, std::string name, std::vector<std::string> argNames, std::vector<DataType> argTypes, Expression *body)
+    DefFun(DataType returnType, std::string name, std::vector<std::string> &argNames, std::vector<DataType> &argTypes, Expression *body)
         : returnType{returnType}, name{name}, argNames{argNames}, argTypes{argTypes}, body{body} {}
     ~DefFun() { delete body; }
 };

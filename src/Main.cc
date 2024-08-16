@@ -5,9 +5,13 @@
 
 int main(int argc, char *argv[]) {
     // std::string a = "123";
-    AST::Literal *b = new AST::Literal{"123"};
-    std::cout << b->value << "\n";
-    delete b;
+    AST::Expression* num = new AST::Literal("123");
+    std::vector<AST::Expression *> v{num};
+
+    AST::Do *d = new AST::Do{v};
+    // std::cout << d->expressions.at(0);
+
     // AST::Literal *n = new AST::Literal(a);
+    delete d;
 
 }
