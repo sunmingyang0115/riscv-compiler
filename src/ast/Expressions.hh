@@ -103,12 +103,12 @@ struct DeRef : Expression {
     DeRef(Expression *data) : data{data} {}
     ~DeRef() { delete data; }
 };
-struct Namespace : Expression {
-    std::string name;
-    Expression *body;
-    Namespace(std::string name, Expression *body) : name{name}, body{body} {};
-    ~Namespace() { delete body; }
-};
+// struct Namespace : Expression {
+//     std::string name;
+//     Expression *body;
+//     Namespace(std::string name, Expression *body) : name{name}, body{body} {};
+//     ~Namespace() { delete body; }
+// };
 struct Exit : Expression {
     Expression *value;
     Exit(Expression *value) : value{value} {}

@@ -3,7 +3,10 @@ project(compiler VERSION 0.0.1 LANGUAGES C CXX)
 
 add_executable(${PROJECT_NAME}
     src/Main.cc
-    src/ast/Expressions.cc)
+    src/ast/Expressions.cc
+    src/parser/BracketHelper.cc
+    src/parser/Tokenizer.cc
+    src/parser/Lexer.cc)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
