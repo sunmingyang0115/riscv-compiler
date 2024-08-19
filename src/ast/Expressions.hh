@@ -89,9 +89,8 @@ struct DefFun : Expression {
     ~DefFun() { delete body; }
 };
 struct Ref : Expression {
-    Expression *data;
-    Ref(Expression *data) : data{data} {}
-    ~Ref() { delete data; }
+    std::string name;
+    Ref(std::string name) : name{name} {}
 };
 struct AddrOf : Expression {
     Expression *data;

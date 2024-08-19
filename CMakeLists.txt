@@ -6,7 +6,7 @@ add_executable(${PROJECT_NAME}
     src/ast/Expressions.cc
     src/parser/BracketHelper.cc
     src/parser/Tokenizer.cc
-    src/parser/Lexer.cc)
+    src/parser/Parser.cc)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

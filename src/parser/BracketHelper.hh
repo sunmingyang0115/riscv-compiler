@@ -7,7 +7,8 @@ public:
     static bool isCloseBracket(std::string &s);
     static bool isOpenBracket(char c);
     static bool isCloseBracket(char c);
-    // static bool doBracketsMatch(std::string &s1, std::string &s2);
+    static bool doBracketsMatch(std::string &open, std::string &close);
+    static bool doBracketsMatch(char open, char close);
 
 };
 

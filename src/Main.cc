@@ -1,25 +1,53 @@
-#include "parser/Lexer.hh"
+#include "parser/Parser.hh"
 #include <iostream>
 #include <memory>
 #include <sstream>
 
-int main(int argc, char *argv[]) {
-    // std::string a = "123";
-    // AST::Expression* num = new AST::Literal("123");
-    // std::vector<AST::Expression *> v{num};
-
-    // AST::Do *d = new AST::Do{v};
-    // // std::cout << d->expressions.at(0);
-    
-    // // AST::Literal *n = new AST::Literal(a);
-    // delete d;
-
-    // std::string a{"[int i = 23)"};
-    // Tokenizer *tk = new Tokenizer{a};
-    // while (tk->hasNext()) {
-    //     std::cout << "|" << tk->next() << "|\n";
-    // }
-
-    Lexer* l = new Lexer{"(print 32) #| \n aming ; 123 |# \n (among 2) ; 123"};
-    std::cout << l->parse() << "\n";
+void printAST(AST::Expression* e) {
+    if (AST::Do* ast = dynamic_cast<AST::Do *>(e)) {
+        std::cout << "(do ";
+        for (AST::Expression* exprs : ast->expressions) {
+            printAST(exprs);
+            if (ast->expressions.back() != exprs) {
+                std::cout << " ";
+            }
+        }
+        std::cout << ")";
+    } else if (AST::Literal* ast = dynamic_cast<AST::Literal *>(e)) {
+        std::cout << ast->value;
+    } else if (AST::DeRef* ast = dynamic_cast<AST::DeRef *>(e)) {
+        std::cout << "(deref ";
+        printAST(ast->data);
+        std::cout << ")";
+    } else if (AST::While* ast = dynamic_cast<AST::While *>(e)) {
+        std::cout << "(while ";
+        printAST(ast->cond);
+        std::cout << " ";
+        printAST(ast->body);
+        std::cout << ")";
+    } else if (AST::If* ast = dynamic_cast<AST::If *>(e)) {
+        std::cout << "(if ";
+        printAST(ast->cond);
+        std::cout << " ";
+        printAST(ast->ifThen);
+        std::cout << " ";
+        printAST(ast->ifElse);
+        std::cout << ")";
+    } else if (AST::Ref* ast = dynamic_cast<AST::Ref *>(e)) {
+        std::cout << "(ref " << ast->name << ")";
+    }
+    else {
+        std::cout << "[nil]";
+    }
 }
+
+int main(int argc, char *argv[]) {
+
+    std::string s = "(do (while 1 (if n 0 1)))";
+    AST::Expression* exp = parse(s);
+    printAST(exp);
+    std::cout << "\n";
+
+
+}
+
