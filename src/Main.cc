@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include "codegen/CodeGen.hh"
 
 void printAST(AST::Expression* e) {
     if (AST::Do* ast = dynamic_cast<AST::Do *>(e)) {
@@ -14,7 +15,7 @@ void printAST(AST::Expression* e) {
         }
         std::cout << ")";
     } else if (AST::Literal* ast = dynamic_cast<AST::Literal *>(e)) {
-        std::cout << ast->value;
+        std::cout << "(lit " << ast->value << ")";
     } else if (AST::DeRef* ast = dynamic_cast<AST::DeRef *>(e)) {
         std::cout << "(deref ";
         printAST(ast->data);
@@ -67,11 +68,11 @@ void printAST(AST::Expression* e) {
 
 int main(int argc, char *argv[]) {
 
-    std::string s = "(do *(int i) &(>> i 2))";
+    std::string s = "(int (main) 1 2 3 4)";
     AST::Expression* exp = parse(s);
     printAST(exp);
     std::cout << "\n";
-
+    compile("../test/rv32gtest.s", exp);
 
 }
 
