@@ -6,10 +6,10 @@
 namespace AST {
 
 enum DataType {
-    d1,
-    d2,
-    d4,
-    d8
+    D1,
+    D2,
+    D4,
+    D8
 };
 enum BinOp {
     ADD,
@@ -41,7 +41,8 @@ struct Bin : Expression {
 public:
     Expression *left;
     Expression *right;
-    Bin(Expression *left, Expression *right) : left{left}, right{right} {}
+    BinOp op;
+    Bin(BinOp op, Expression *left, Expression *right) : op{op}, left{left}, right{right} {}
     ~Bin() { delete left, delete right; }
 };
 struct Do : Expression {

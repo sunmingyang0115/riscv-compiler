@@ -19,6 +19,10 @@ void printAST(AST::Expression* e) {
         std::cout << "(deref ";
         printAST(ast->data);
         std::cout << ")";
+    } else if (AST::AddrOf* ast = dynamic_cast<AST::AddrOf *>(e)) {
+        std::cout << "(addrOf ";
+        printAST(ast->data);
+        std::cout << ")";
     } else if (AST::While* ast = dynamic_cast<AST::While *>(e)) {
         std::cout << "(while ";
         printAST(ast->cond);
@@ -35,6 +39,26 @@ void printAST(AST::Expression* e) {
         std::cout << ")";
     } else if (AST::Ref* ast = dynamic_cast<AST::Ref *>(e)) {
         std::cout << "(ref " << ast->name << ")";
+    } else if (AST::DefFun *ast = dynamic_cast<AST::DefFun *>(e)) {
+        std::cout << "(def-fun " << ast->returnType << " " << ast->name << " [";
+        for (int i = 0; i < ast->argNames.size(); i++) {
+            std::cout << "(" << ast->argTypes.at(i) << " " << ast->argNames.at(i) << ")";
+            if (ast->argNames.back() != ast->argNames.at(i)) {
+                std::cout << " ";
+            }
+        }
+        std::cout << "] ";
+        printAST(ast->body);
+        std::cout << ")";
+    }
+    else if (AST::DefVar *ast = dynamic_cast<AST::DefVar *>(e)) {
+        std::cout << "(def-var " << ast->dataType << " " << ast->name << ")";
+    } else if (AST::Bin *ast = dynamic_cast<AST::Bin *>(e)) {
+        std::cout << "(bin " << ast->op << " ";
+        printAST(ast->left);
+        std::cout << " ";
+        printAST(ast->right);
+        std::cout << ")";
     }
     else {
         std::cout << "[nil]";
@@ -43,7 +67,7 @@ void printAST(AST::Expression* e) {
 
 int main(int argc, char *argv[]) {
 
-    std::string s = "(do (while 1 (if n 0 1)))";
+    std::string s = "(do *(int i) &(>> i 2))";
     AST::Expression* exp = parse(s);
     printAST(exp);
     std::cout << "\n";
