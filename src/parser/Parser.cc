@@ -2,7 +2,6 @@
 #include "BracketHelper.hh"
 #include "Tokenizer.hh"
 #include <cstdlib>
-#include <unordered_map>
 
 bool stringToDataType(AST::DataType *dt, std::string str) {
     static const std::unordered_map<std::string, AST::DataType> map = {
@@ -150,7 +149,12 @@ private:
             AST::Expression *value = parse();
             return new AST::Cast(dt, value);
         } else {
-            exit(-1);
+            std::string name = car;
+            std::vector<AST::Expression *> args{};
+            while (!BracketHelper::isCloseBracket(car = tk.peek())) {
+                args.push_back(parse());
+            }
+            return new AST::RefFun{name, args};
         }
     }
 
@@ -159,7 +163,7 @@ private:
         if (isNumber(atom)) {
             return new AST::Literal(atom);
         } else {
-            return new AST::Ref(atom);
+            return new AST::RefVar(atom);
         }
     }
 

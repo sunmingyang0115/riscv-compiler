@@ -89,9 +89,15 @@ struct DefFun : Expression {
         : returnType{returnType}, name{name}, argNames{argNames}, argTypes{argTypes}, body{body} {}
     ~DefFun() { delete body; }
 };
-struct Ref : Expression {
+struct RefVar : Expression {
     std::string name;
-    Ref(std::string name) : name{name} {}
+    RefVar(std::string name) : name{name} {}
+};
+struct RefFun : Expression {
+    std::string name;
+    std::vector<Expression *> arguments;
+    RefFun(std::string name, std::vector<Expression *> arguments) : name{name}, arguments{arguments} {}
+    ~RefFun();
 };
 struct AddrOf : Expression {
     Expression *data;

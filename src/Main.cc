@@ -38,7 +38,7 @@ void printAST(AST::Expression* e) {
         std::cout << " ";
         printAST(ast->ifElse);
         std::cout << ")";
-    } else if (AST::Ref* ast = dynamic_cast<AST::Ref *>(e)) {
+    } else if (AST::RefVar* ast = dynamic_cast<AST::RefVar *>(e)) {
         std::cout << "(ref " << ast->name << ")";
     } else if (AST::DefFun *ast = dynamic_cast<AST::DefFun *>(e)) {
         std::cout << "(def-fun " << ast->returnType << " " << ast->name << " [";
@@ -68,11 +68,12 @@ void printAST(AST::Expression* e) {
 
 int main(int argc, char *argv[]) {
 
-    std::string s = "(int (main) 1 2 3 4)";
+    std::string s = "(do (int (main) (+ 10 (test))) (int (four) 4) (int (test) 1 2 3 (four)))";
     AST::Expression* exp = parse(s);
     printAST(exp);
     std::cout << "\n";
     compile("../test/rv32gtest.s", exp);
+    delete exp;
 
 }
 

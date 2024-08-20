@@ -6,3 +6,10 @@ AST::Do::~Do() {
     }
     this->expressions.clear();
 }
+
+AST::RefFun::~RefFun() {
+    for (Expression *e : this->arguments) {
+        delete e;
+    }
+    this->arguments.clear();
+}
