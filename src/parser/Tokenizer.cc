@@ -10,7 +10,7 @@ Tokenizer::Tokenizer(std::string &s) : data{s}, pos{0} {}
 Tokenizer::~Tokenizer() {}
 
 int Tokenizer::getNextPosition() {
-    while (this->data[this->pos] == ' ' && this->data.length() > this->pos) {
+    while (iswspace(this->data[this->pos]) && this->data.length() > this->pos) {
         this->pos++;
     }
     if (this->data.length() <= this->pos) return -1;
@@ -18,7 +18,7 @@ int Tokenizer::getNextPosition() {
     char f = this->data[this->pos];
     if (BracketHelper::isOpenBracket(f) || BracketHelper::isCloseBracket(f)) return this->pos+1;
     for (int i = this->pos; i < this->data.length(); i++) {
-        if (this->data[i] == ' ') return i;
+        if (iswspace(this->data[i])) return i;
         else if (BracketHelper::isOpenBracket(this->data[i]) || BracketHelper::isCloseBracket(this->data[i])) return i;
     }
     return -1;

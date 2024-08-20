@@ -3,6 +3,7 @@
 #include <memory>
 #include <sstream>
 #include "codegen/CodeGen.hh"
+#include <fstream>
 
 void printAST(AST::Expression* e) {
     if (AST::Do* ast = dynamic_cast<AST::Do *>(e)) {
@@ -60,6 +61,12 @@ void printAST(AST::Expression* e) {
         std::cout << " ";
         printAST(ast->right);
         std::cout << ")";
+    } else if (AST::Set *ast = dynamic_cast<AST::Set *>(e)) {
+        std::cout << "(set ";
+        printAST(ast->data);
+        std::cout << " ";
+        printAST(ast->value);
+        std::cout << ")";
     }
     else {
         std::cout << "[nil]";
@@ -68,10 +75,13 @@ void printAST(AST::Expression* e) {
 
 int main(int argc, char *argv[]) {
 
-    std::string s = "(do (int (main) (+ 10 (test))) (int (four) 4) (int (test) 1 2 3 (four)))";
+    std::ifstream t{"../test/main.rkt"};
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    std::string s = buffer.str();
+    
     AST::Expression* exp = parse(s);
     printAST(exp);
-    std::cout << "\n";
     compile("../test/rv32gtest.s", exp);
     delete exp;
 

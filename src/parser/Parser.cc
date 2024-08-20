@@ -2,6 +2,7 @@
 #include "BracketHelper.hh"
 #include "Tokenizer.hh"
 #include <cstdlib>
+#include <unordered_map>
 
 bool stringToDataType(AST::DataType *dt, std::string str) {
     static const std::unordered_map<std::string, AST::DataType> map = {
