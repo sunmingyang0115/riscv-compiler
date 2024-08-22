@@ -78,10 +78,11 @@ int main(int argc, char *argv[]) {
     std::ifstream t{"../test/main.rkt"};
     std::stringstream buffer;
     buffer << t.rdbuf();
-    std::string s = buffer.str();
+    std::string s = "(do "+buffer.str()+")";
     
     AST::Expression* exp = parse(s);
     printAST(exp);
+    std::cout << "\n";
     compile("../test/rv32gtest.s", exp);
     delete exp;
 

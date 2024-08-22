@@ -33,6 +33,7 @@ bool stringToBinOp(AST::BinOp *op, std::string str) {
         {"<=", AST::BinOp::LEQ},
         {"=", AST::BinOp::EQ},
         {"!=", AST::BinOp::NEQ},
+        {"xor", AST::BinOp::XOR},
         {">>", AST::BinOp::BSR},
         {"<<", AST::BinOp::BSL}};
     auto it = map.find(str);
@@ -70,8 +71,7 @@ private:
             return new AST::DeRef(parse());
         } else if (first == "&") {
             return new AST::AddrOf(parse());
-        }
-        if (first[0] == '*') {
+        } else if (first[0] == '*') {
             first.erase(0, 1);
             return new AST::DeRef(parseSexp(first));
         } else if (first[0] == '&') {

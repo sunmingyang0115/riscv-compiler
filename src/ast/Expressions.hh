@@ -25,6 +25,8 @@ enum BinOp {
     LEQ,
     EQ,
     NEQ,
+    NOT,
+    XOR,
     BSR,
     BSL
 };
