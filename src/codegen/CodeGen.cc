@@ -62,6 +62,14 @@ private:
     std::unordered_map<std::string, int> varOffsetMap;
     RegAlloc allocator;
     int offsetFP;
+    void push(int amount, std::string reg) {
+        builder << "        sw      " << reg << ", 0(sp)\n"
+                << "        addi    sp, sp, " << -amount << "\n";
+    }
+    void pull(int amount, std::string reg) {
+        builder << "        lw      " << reg << ", 4(sp)\n"
+                << "        addi    sp, sp, " << amount << "\n";
+    }
 
 public:
     CompilerHelper() : builder{}, varOffsetMap{}, offsetFP{0}, allocator{} {
@@ -105,12 +113,10 @@ public:
             int r = allocator.newReg();
             if (r == -1) {
                 compile(cast->left);
-                builder << "        sw      a0, 0(sp)\n"
-                        << "        addi    sp, sp, -4\n";
+                push(4, "a0");
                 compile(cast->right);
-                builder << "        lw      a1, 4(sp)\n"
-                        << "        addi    sp, sp, 4\n"
-                        << binOpToInstruction(cast->op);
+                pull(4, "a1");
+                builder << binOpToInstruction(cast->op);
             } else {
                 compile(cast->left);
                 builder << "        add     t" << r << ", zero, a0\n";
@@ -122,7 +128,7 @@ public:
         } else if (auto cast = dynamic_cast<AST::DefVar *>(ast)) {
             // todo: add other datatypes
             varOffsetMap[cast->name] = offsetFP;
-            builder << "        addi    sp, sp, -4\n";
+            push(4, "a0");
             offsetFP -= 4;
         } else if (auto cast = dynamic_cast<AST::RefVar *>(ast)) {
             builder << "        addi    a0, fp, " << varOffsetMap[cast->name] << "\n";
@@ -130,18 +136,15 @@ public:
             int r = allocator.newReg();
             if (r == -1) {
                 compile(cast->data);
-                builder << "        sw      a0, 0(sp)\n"
-                        << "        addi    sp, sp, -4\n";
+                push(4, "a0");
                 compile(cast->value);
-                builder << "        lw      a1, 4(sp)\n"
-                        << "        addi    sp, sp, 4\n"
-                        << "        sw      a0, 0(a1)\n";
+                pull(4, "a1");
+                builder << "        sw      a0, 0(a1)\n";
             } else {
                 compile(cast->data);
                 builder << "        add     t" << r << ", zero, a0\n";
                 compile(cast->value);
-                builder << "        add     a1, zero, t" << r << "\n"
-                        << "        sw      a0, 0(a1)\n";
+                builder << "        sw      a0, 0(t" << r << ")\n";
                 allocator.freeReg(r);
             }
             
