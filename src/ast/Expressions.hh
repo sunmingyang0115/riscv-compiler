@@ -58,12 +58,11 @@ struct While : Expression {
     While(Expression *cond, Expression *body) : cond{cond}, body{body} {}
     ~While() { delete cond, delete body; }
 };
-struct If : Expression {
-    Expression *cond;
-    Expression *ifThen;
-    Expression *ifElse;
-    If(Expression *cond, Expression *ifThen, Expression *ifElse) : cond{cond}, ifThen{ifThen}, ifElse{ifElse} {}
-    ~If() { delete cond, delete ifThen, delete ifElse; }
+struct Cond : Expression {
+    std::vector<Expression *> conds;
+    std::vector<Expression *> thens;
+    Cond(std::vector<Expression *> &conds, std::vector<Expression *> &thens) : conds{conds}, thens{thens} {}
+    ~Cond();
 };
 struct Not : Expression {
     Expression *value;

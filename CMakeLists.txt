@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME}
     src/parser/BracketHelper.cc
     src/parser/Tokenizer.cc
     src/parser/Parser.cc
+    src/codegen/RegAlloc.cc
     src/codegen/CodeGen.cc)
 
 set(CMAKE_CXX_STANDARD 14)

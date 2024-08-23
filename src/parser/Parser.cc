@@ -132,11 +132,16 @@ private:
             AST::Expression *cond = parse();
             AST::Expression *body = parseList("do");
             return new AST::While(cond, body);
-        } else if (car == "if") {
-            AST::Expression *cond = parse();
-            AST::Expression *ifthen = parse();
-            AST::Expression *ifelse = parse();
-            return new AST::If(cond, ifthen, ifelse);
+        } else if (car == "cond") {
+            std::vector<AST::Expression *> conds;
+            std::vector<AST::Expression *> thens;
+            while(!BracketHelper::isCloseBracket(car = tk.peek())) {
+                tk.next();
+                conds.push_back(parse());
+                thens.push_back(parseList("do"));
+                tk.next();
+            }
+            return new AST::Cond(conds, thens);
         } else if (car == "not") {
             return new AST::Not(parse());
         } else if (car == "set") {

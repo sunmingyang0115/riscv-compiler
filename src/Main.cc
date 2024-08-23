@@ -31,13 +31,17 @@ void printAST(AST::Expression* e) {
         std::cout << " ";
         printAST(ast->body);
         std::cout << ")";
-    } else if (AST::If* ast = dynamic_cast<AST::If *>(e)) {
-        std::cout << "(if ";
-        printAST(ast->cond);
-        std::cout << " ";
-        printAST(ast->ifThen);
-        std::cout << " ";
-        printAST(ast->ifElse);
+    } else if (AST::Cond* ast = dynamic_cast<AST::Cond *>(e)) {
+        std::cout << "(cond ";
+        for (int i = 0; i < ast->conds.size(); i++) {
+            std::cout << "[";
+            printAST(ast->conds.at(i));
+            printAST(ast->thens.at(i));
+            if (ast->conds.back() != ast->conds.at(i)) {
+                std::cout << " ";
+            }
+            std::cout << "]";
+        }
         std::cout << ")";
     } else if (AST::RefVar* ast = dynamic_cast<AST::RefVar *>(e)) {
         std::cout << "(ref " << ast->name << ")";
@@ -66,6 +70,15 @@ void printAST(AST::Expression* e) {
         printAST(ast->data);
         std::cout << " ";
         printAST(ast->value);
+        std::cout << ")";
+    } else if (AST::RefFun * ast = dynamic_cast<AST::RefFun* >(e)) {
+        std::cout << "(" << ast->name;
+        for (int i = 0; i < ast->arguments.size(); i++) {
+            std::cout << ast->arguments.at(i);
+            if (ast->arguments.back() != ast->arguments.at(i)) {
+                std::cout << " ";
+            }
+        }
         std::cout << ")";
     }
     else {

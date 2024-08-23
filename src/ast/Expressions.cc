@@ -13,3 +13,14 @@ AST::RefFun::~RefFun() {
     }
     this->arguments.clear();
 }
+
+AST::Cond::~Cond() {
+    for (Expression *e : this->conds) {
+        delete e;
+    }
+    for (Expression *e : this->thens) {
+        delete e;
+    }
+    this->conds.clear();
+    this->thens.clear();
+}

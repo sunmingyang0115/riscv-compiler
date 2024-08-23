@@ -1,50 +1,57 @@
 #include "CodeGen.hh"
+#include "RegAlloc.hh"
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
 
+std::string getNewLabel() {
+    static int n = 0;
+    return "_L" + std::to_string(n++);
+}
+
 std::string binOpToInstruction(AST::BinOp op) {
+    // todo: add short circuiting to some binops
     switch (op) {
     case AST::BinOp::ADD:
-        return "        add     t0, t1, t0\n";
+        return "        add     a0, a1, a0\n";
     case AST::BinOp::SUB:
-        return "        sub     t0, t1, t0\n";
+        return "        sub     a0, a1, a0\n";
     case AST::BinOp::DIV:
-        return "        div     t0, t1, t0\n";
+        return "        div     a0, a1, a0\n";
     case AST::BinOp::MUL:
-        return "        mul     t0, t1, t0\n";
+        return "        mul     a0, a1, a0\n";
     case AST::BinOp::MOD:
-        return "        rem     t0, t1, t0\n";
+        return "        rem     a0, a1, a0\n";
     case AST::BinOp::AND:
-        return "        and      t0, t1, t0\n"
-               "        sltu     t0, zero, t0\n";
+        return "        and     a0, a1, a0\n"
+               "        sltu    a0, zero, a0\n";
     case AST::BinOp::OR:
-        return "        or      t0, t1, t0\n"
-               "        sltiu   t0, t0, 1\n"
-               "        xori    t0, t0, 1\n";
+        return "        or      a0, a1, a0\n"
+               "        sltiu   a0, a0, 1\n"
+               "        xori    a0, a0, 1\n";
     case AST::BinOp::GT:
-        return "        slt     t0, t0, t1\n";
+        return "        slt     a0, a0, a1\n";
     case AST::BinOp::LT:
-        return "        slt     t0, t1, t0\n";
+        return "        slt     a0, a1, a0\n";
     case AST::BinOp::GEQ:
-        return "        slt     t0, t1, t0\n"
-               "        sltiu   t0, t0, 1\n";
+        return "        slt     a0, a1, a0\n"
+               "        sltiu   a0, a0, 1\n";
     case AST::BinOp::LEQ:
-        return "        slt     t0, t0, t1\n"
-               "        sltiu   t0, t0, 1\n";
+        return "        slt     a0, a0, a1\n"
+               "        sltiu   a0, a0, 1\n";
     case AST::BinOp::EQ:
-        return "        xor     t0, t1, t0\n"
-               "        sltiu   t0, t0, 1\n";
+        return "        xor     a0, a1, a0\n"
+               "        sltiu   a0, a0, 1\n";
     case AST::BinOp::NEQ:
-        return "        xor     t0, t1, t0\n"
-               "        sltu    t0, x0, t0\n";
+        return "        xor     a0, a1, a0\n"
+               "        sltu    a0, x0, a0\n";
     case AST::BinOp::XOR:
-        return "        xor     t0, t1, t0\n"
-               "        sltu    t0, x0, t0\n";
+        return "        xor     a0, a1, a0\n"
+               "        sltu    a0, x0, a0\n";
     case AST::BinOp::BSL:
-        return "        sll     t0, t1, t0\n";
+        return "        sll     a0, a1, a0\n";
     case AST::BinOp::BSR:
-        return "        sra     t0, t1, t0\n";
+        return "        sra     a0, a1, a0\n";
     }
     exit(1);
 }
@@ -53,21 +60,21 @@ class CompilerHelper {
 private:
     std::stringstream builder;
     std::unordered_map<std::string, int> varOffsetMap;
+    RegAlloc allocator;
     int offsetFP;
 
 public:
-    CompilerHelper() : builder{}, varOffsetMap{}, offsetFP{0} {
+    CompilerHelper() : builder{}, varOffsetMap{}, offsetFP{0}, allocator{} {
         builder << "        .global _start\n"
                 << "_start: addi    sp, sp, 400\n" // reserve stack mem
                 << "        jal     ra, main\n"
-                << "        add     a0, zero, t0\n"
                 << "        addi    a7, x0, 93\n"
                 << "        ecall\n";
     }
     void compile(AST::Expression *ast) {
         if (auto cast = dynamic_cast<AST::Literal *>(ast)) {
             int value = std::atoi(cast->value.c_str());
-            builder << "        addi    t0, zero, " << value << "\n";
+            builder << "        addi    a0, zero, " << value << "\n";
             // todo: make this not error for litearls [2047, -2048]
         } else if (auto cast = dynamic_cast<AST::DefFun *>(ast)) {
             // todo: load arguments
@@ -95,35 +102,71 @@ public:
             // todo: load args
             builder << "        jal     ra, " << cast->name << "\n";
         } else if (auto cast = dynamic_cast<AST::Bin *>(ast)) {
-            compile(cast->left);
-            builder << "        sw      t0, 0(sp)\n"
-                    << "        addi    sp, sp, -4\n";
-            compile(cast->right);
-            builder << "        lw      t1, 4(sp)\n"
-                    << "        addi    sp, sp, 4\n";
-            builder << binOpToInstruction(cast->op);
+            int r = allocator.newReg();
+            if (r == -1) {
+                compile(cast->left);
+                builder << "        sw      a0, 0(sp)\n"
+                        << "        addi    sp, sp, -4\n";
+                compile(cast->right);
+                builder << "        lw      a1, 4(sp)\n"
+                        << "        addi    sp, sp, 4\n"
+                        << binOpToInstruction(cast->op);
+            } else {
+                compile(cast->left);
+                builder << "        add     t" << r << ", zero, a0\n";
+                compile(cast->right);
+                builder << "        add     a1, zero, t" << r << "\n"
+                        << binOpToInstruction(cast->op);
+                allocator.freeReg(r);
+            }
         } else if (auto cast = dynamic_cast<AST::DefVar *>(ast)) {
             // todo: add other datatypes
             varOffsetMap[cast->name] = offsetFP;
             builder << "        addi    sp, sp, -4\n";
             offsetFP -= 4;
         } else if (auto cast = dynamic_cast<AST::RefVar *>(ast)) {
-            builder << "        addi    t0, fp, " << varOffsetMap[cast->name] << "\n";
+            builder << "        addi    a0, fp, " << varOffsetMap[cast->name] << "\n";
         } else if (auto cast = dynamic_cast<AST::Set *>(ast)) {
-            compile(cast->data);
-            builder << "        sw      t0, 0(sp)\n"
-                    << "        addi    sp, sp, -4\n";
-            compile(cast->value);
-            builder << "        lw      t1, 4(sp)\n"
-                    << "        addi    sp, sp, 4\n"
-                    << "        sw      t0, 0(t1)\n";
+            int r = allocator.newReg();
+            if (r == -1) {
+                compile(cast->data);
+                builder << "        sw      a0, 0(sp)\n"
+                        << "        addi    sp, sp, -4\n";
+                compile(cast->value);
+                builder << "        lw      a1, 4(sp)\n"
+                        << "        addi    sp, sp, 4\n"
+                        << "        sw      a0, 0(a1)\n";
+            } else {
+                compile(cast->data);
+                builder << "        add     t" << r << ", zero, a0\n";
+                compile(cast->value);
+                builder << "        add     a1, zero, t" << r << "\n"
+                        << "        sw      a0, 0(a1)\n";
+                allocator.freeReg(r);
+            }
+            
         } else if (auto cast = dynamic_cast<AST::DeRef *>(ast)) {
             compile(cast->data);
-            builder << "        lw      t0, 0(t0)\n";
+            builder << "        lw      a0, 0(a0)\n";
         } else if (auto cast = dynamic_cast<AST::AddrOf *>(ast)) {
         } else if (auto cast = dynamic_cast<AST::Not *>(ast)) {
             compile(cast->value);
-            builder << "        sltiu   t0, t0, 1\n";
+            builder << "        sltiu   a0, a0, 1\n";
+        } 
+        else if (auto cast = dynamic_cast<AST::Cond *>(ast)) {
+            // todo: make cond dealloc mem
+            std::string endIf = getNewLabel();
+            for (int i = 0; i < cast->conds.size(); i++) {
+                bool last = i == cast->conds.size() - 1;
+                std::string next = last? endIf: getNewLabel();
+                compile(cast->conds.at(i));
+                builder << "        beq     a0, x0, " << next << "\n";
+                compile(cast->thens.at(i));
+                if (!last)
+                    builder << "        j       " << endIf << "\n";
+                
+                builder << next << ":\n";
+            }
         }
     }
     bool finalize(std::string file) {
