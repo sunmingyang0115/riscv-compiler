@@ -67,14 +67,18 @@ private:
     Tokenizer tk;
 
     AST::Expression *parseSexp(std::string first) {
-        if (first == "*") {
-            return new AST::DeRef(parse());
-        } else if (first == "&") {
+        if (first == "char^" || first == "short^" || first == "int^" || first == "long^") {
+            first.pop_back();
+            AST::DataType dt;
+            stringToDataType(&dt, first);
+            return new AST::DeRef(dt, parse());
+        } else if (first == "@") {
             return new AST::AddrOf(parse());
-        } else if (first[0] == '*') {
-            first.erase(0, 1);
-            return new AST::DeRef(parseSexp(first));
-        } else if (first[0] == '&') {
+        } else if (!first.rfind("char^", 0) || !first.rfind("short^", 0) || !first.rfind("int^", 0) || !first.rfind("long^", 0)) {
+            AST::DataType dt;
+            stringToDataType(&dt, first.substr(0, first.find("^")));
+            return new AST::DeRef(dt, parseSexp(first.substr(first.find("^")+1)));
+        } else if (first[0] == '@') {
             first.erase(0, 1);
             return new AST::AddrOf(parseSexp(first));
         } else if (BracketHelper::isOpenBracket(first)) {
@@ -105,12 +109,12 @@ private:
                     argTypes.push_back(dt);
                     std::string argClose = tk.next();
                     if (!BracketHelper::doBracketsMatch(argOpen, argClose)) {
-                        exit(-1);
+                        exit(1);
                     }
                 }
                 std::string funClose = tk.next();
                 if (!BracketHelper::doBracketsMatch(funOpen, funClose)) {
-                    exit(-1);
+                    exit(1);
                 }
                 AST::Expression *body = parseList("do");
                 return new AST::DefFun(dt, name, argNames, argTypes, body);

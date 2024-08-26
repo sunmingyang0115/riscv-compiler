@@ -107,7 +107,8 @@ struct AddrOf : Expression {
 };
 struct DeRef : Expression {
     Expression *data;
-    DeRef(Expression *data) : data{data} {}
+    DataType refTo;
+    DeRef(DataType refTo, Expression *data) : refTo{refTo},data{data} {}
     ~DeRef() { delete data; }
 };
 // struct Namespace : Expression {

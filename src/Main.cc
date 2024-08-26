@@ -18,7 +18,7 @@ void printAST(AST::Expression* e) {
     } else if (AST::Literal* ast = dynamic_cast<AST::Literal *>(e)) {
         std::cout << "(lit " << ast->value << ")";
     } else if (AST::DeRef* ast = dynamic_cast<AST::DeRef *>(e)) {
-        std::cout << "(deref ";
+        std::cout << "(deref " << ast->refTo << " ";
         printAST(ast->data);
         std::cout << ")";
     } else if (AST::AddrOf* ast = dynamic_cast<AST::AddrOf *>(e)) {
@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
     AST::Expression* exp = parse(s);
     printAST(exp);
     std::cout << "\n";
-    compile("../test/rv32gtest.s", exp);
+    compile("../test/rv64gtest.s", exp);
     delete exp;
 
 }
