@@ -74,10 +74,10 @@ void printAST(AST::Expression* e) {
     } else if (AST::RefFun * ast = dynamic_cast<AST::RefFun* >(e)) {
         std::cout << "(" << ast->name;
         for (int i = 0; i < ast->arguments.size(); i++) {
-            std::cout << ast->arguments.at(i);
             if (ast->arguments.back() != ast->arguments.at(i)) {
                 std::cout << " ";
             }
+            printAST(ast->arguments.at(i));
         }
         std::cout << ")";
     }

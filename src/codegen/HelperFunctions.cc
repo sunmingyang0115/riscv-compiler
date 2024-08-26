@@ -9,7 +9,7 @@ void Compiler::initHelper() {
                      "        ecall\n";
 }
 void Compiler::printNumHelper() {
-    this->builder << "_print: add     t0, zero, a0\n"
+    this->builder << "_print: ld      t0, 0(sp)\n"
                      "        addi    t1, zero, '\\n'\n"
                      "        addi    sp, sp, -1\n"
                      "        sb      t1, 0(sp)\n"
@@ -28,6 +28,7 @@ void Compiler::printNumHelper() {
                      "        add     a2, zero, t2\n"
                      "        addi    a7, zero, 64\n"
                      "        ecall\n"
+                     "        add     t2, t2, 8\n"
                      "        add     sp, sp, t2\n"
                      "        ret\n";
 }

@@ -16,8 +16,6 @@ private:
 
     void initHelper();
     void printNumHelper();
-    // void setHelper();
-    // void refHelper();
 
 public:
     Compiler();
