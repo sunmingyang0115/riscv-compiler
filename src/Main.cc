@@ -88,16 +88,17 @@ void printAST(AST::Expression* e) {
 }
 
 int main(int argc, char *argv[]) {
+    // std::cout << argv[1] << " " << argv[2] << "\n";
 
-    std::ifstream t{"../test/main.rkt"};
+    std::ifstream t{argv[1]};
     std::stringstream buffer;
     buffer << t.rdbuf();
     std::string s = "(do "+buffer.str()+")";
     
     AST::Expression* exp = parse(s);
-    printAST(exp);
-    std::cout << "\n";
-    compile("../test/rv64gtest.s", exp);
+    // printAST(exp);
+    // std::cout << "\n";
+    compile(argv[2], exp);
     delete exp;
 
 }

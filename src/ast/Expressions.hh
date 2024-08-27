@@ -117,6 +117,12 @@ struct DeRef : Expression {
 //     Namespace(std::string name, Expression *body) : name{name}, body{body} {};
 //     ~Namespace() { delete body; }
 // };
+struct Export : Expression {
+    std::vector<std::string> datas;
+    Export(std::vector<std::string> datas) : datas{datas} {}
+    ~Export() {}
+};
+
 struct Exit : Expression {
     Expression *value;
     Exit(Expression *value) : value{value} {}

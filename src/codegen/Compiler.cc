@@ -17,8 +17,6 @@ std::string newUniqueLabel() {
 }
 
 Compiler::Compiler() {
-    this->initHelper();
-    this->printNumHelper();
 }
 
 void Compiler::compile(AST::Expression *ast) {
@@ -62,8 +60,20 @@ void Compiler::compile(AST::Expression *ast) {
                           "        sltu    a0, x0, a0\n"},
         {AST::BinOp::BSL, "        sll     a0, a1, a0\n"},
         {AST::BinOp::BSR, "        sra     a0, a1, a0\n"}};
-
-    if (auto cast = dynamic_cast<AST::DefFun *>(ast)) {
+    
+    if (auto cast = dynamic_cast<AST::Export *>(ast)) {
+        if (!cast->datas.empty()) {
+            this->builder << "        .global ";
+            for (int i = 0; i < cast->datas.size(); i++) {
+                this->builder << "_" << cast->datas.at(i);
+                if (i != cast->datas.size()-1) {
+                    this->builder << ", ";
+                }
+            }
+            this->builder << "\n";
+        }
+    }
+    else if (auto cast = dynamic_cast<AST::DefFun *>(ast)) {
         this->offsetFP = 0;
         this->varOffsetMap = {};
         int pos = 16;
@@ -112,15 +122,7 @@ void Compiler::compile(AST::Expression *ast) {
             this->builder << "        lui     a0, " << (upper & 0xFFFFF) << "\n";
             this->builder << "        addi    a0, a0, " << lower << "\n";
         }
-
-        // if (upper != 0 || lower == 0 || upper == 0 && lower == 0) {
-        //     this->builder << "        lui     a0, " << (upper & 0xFFFFF) << "\n";
-        // }
-        // if (lower != 0) {
-        //     this->builder << "        addi    a0, a0, " << lower << "\n";
-        // }
     } else if (auto cast = dynamic_cast<AST::Bin *>(ast)) {
-        // todo: make other binops later
         // more todo: use reg alloc
         // even more todo: add a lowering step that turns (+ d4 d8) to (long+ (int2long d4) d8)
         compile(cast->left);
@@ -177,6 +179,17 @@ void Compiler::compile(AST::Expression *ast) {
             this->builder << "        addi    sp, sp, " << (offsetFP - startSP) << "\n";
         }
         this->builder << end << ":\n";
+    } else if (auto cast = dynamic_cast<AST::While *>(ast)) {
+        std::string start = newUniqueLabel();
+        std::string end = newUniqueLabel();
+        int startSP = offsetFP;
+        this->builder << start << ":\n";
+        compile(cast->cond);
+        this->builder << "        beq     a0, zero, " << end << "\n";
+        compile(cast->body);
+        this->builder << "        addi    sp, sp, " << (offsetFP - startSP) << "\n"
+                      << "        j       " << start << "\n"
+                      << end << ":\n";
     }
 }
 
@@ -203,4 +216,3 @@ bool Compiler::finalize(std::string file) {
 }
 
 Compiler::~Compiler() {}
-// void refHelper()

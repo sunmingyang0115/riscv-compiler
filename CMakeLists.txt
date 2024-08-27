@@ -9,7 +9,6 @@ add_executable(${PROJECT_NAME}
     src/parser/Parser.cc
     src/codegen/RegAlloc.cc
     src/codegen/Compiler.cc
-    src/codegen/HelperFunctions.cc
     src/codegen/CodeGen.cc)
 
 set(CMAKE_CXX_STANDARD 14)

@@ -1,7 +1,9 @@
 #include "Parser.hh"
 #include "BracketHelper.hh"
 #include "Tokenizer.hh"
+#include <iostream>
 #include <cstdlib>
+#include <sstream>
 #include <unordered_map>
 
 bool stringToDataType(AST::DataType *dt, std::string str) {
@@ -96,7 +98,14 @@ private:
     AST::Expression *parseList(std::string car) {
         AST::DataType dt;
         AST::BinOp op;
-        if (stringToDataType(&dt, car)) {
+        if (car == "export") {
+            std::vector<std::string> datas;
+            while (!BracketHelper::isCloseBracket(car = tk.peek())) {
+                datas.push_back(tk.next());
+            }
+            return new AST::Export(datas);
+        }
+        else if (stringToDataType(&dt, car)) {
             if (BracketHelper::isOpenBracket(tk.peek())) { // function
                 std::string funOpen = tk.next();
                 std::string name = tk.next();
@@ -186,8 +195,41 @@ public:
     }
 };
 
+std::string filterComments(std::string &raw) {
+    // std::istringstream f(raw);
+    std::stringstream ss{};
+    // std::string line;
+    bool commentLine = false;
+    bool commentBody = false;
+    for (int i = 0; i < raw.size(); i++) {
+        if (i != raw.size()) {
+            char c = raw[i];
+            char cn = raw[i+1];
+            if (c == '#' && cn == '|') {
+                commentBody = true;
+            } else if (c == '|' && cn == '#') {
+                i += 2;
+                commentBody = false;
+            }
+        }
+        if (!commentBody) {
+            if (raw[i] == ';') {
+                commentLine = true;
+            }
+        }
+        if (raw[i] == '\n') {
+            commentLine = false;
+        }
+        if (!commentLine && !commentBody) {
+            ss << raw[i];
+        }
+    }
+    return ss.str();
+}
+
 AST::Expression *parse(std::string &raw) {
-    Tokenizer tk{raw};
+    std::string filtered = filterComments(raw);
+    Tokenizer tk{filtered};
     ParseHelper ph{tk};
     return ph.parse();
 }

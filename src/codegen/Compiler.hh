@@ -14,9 +14,6 @@ private:
     void push(int amount, std::string reg);
     void pull(int amount, std::string reg);
 
-    void initHelper();
-    void printNumHelper();
-
 public:
     Compiler();
     ~Compiler();
