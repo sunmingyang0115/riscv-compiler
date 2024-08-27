@@ -11,6 +11,10 @@ void Compiler::pull(int amount, std::string reg) {
     this->builder << "        lw      " << reg << ", 4(sp)\n"
                   << "        addi    sp, sp, " << amount << "\n";
 }
+std::string newUniqueLabel() {
+    static int n = 0;
+    return "_L" + std::to_string(++n);
+}
 
 Compiler::Compiler() {
     this->initHelper();
@@ -33,17 +37,42 @@ void Compiler::compile(AST::Expression *ast) {
         {AST::DataType::D2, "sh"},
         {AST::DataType::D4, "sw"},
         {AST::DataType::D8, "sd"}};
+    static std::unordered_map<AST::BinOp, std::string> binOpToIns = {
+        {AST::BinOp::ADD, "        add     a0, a1, a0\n"},
+        {AST::BinOp::SUB, "        sub     a0, a1, a0\n"},
+        {AST::BinOp::DIV, "        div     a0, a1, a0\n"},
+        {AST::BinOp::MUL, "        mul     a0, a1, a0\n"},
+        {AST::BinOp::MOD, "        rem     a0, a1, a0\n"},
+        {AST::BinOp::AND, "        and     a0, a1, a0\n"
+                          "        sltu    a0, zero, a0\n"},
+        {AST::BinOp::OR, "        or      a0, a1, a0\n"
+                         "        sltiu   a0, a0, 1\n"
+                         "        xori    a0, a0, 1\n"},
+        {AST::BinOp::GT, "        slt     a0, a0, a1\n"},
+        {AST::BinOp::LT, "        slt     a0, a1, a0\n"},
+        {AST::BinOp::GEQ, "        slt     a0, a1, a0\n"
+                          "        sltiu   a0, a0, 1\n"},
+        {AST::BinOp::LEQ, "        slt     a0, a0, a1\n"
+                          "        sltiu   a0, a0, 1\n"},
+        {AST::BinOp::EQ, "        xor     a0, a1, a0\n"
+                         "        sltiu   a0, a0, 1\n"},
+        {AST::BinOp::NEQ, "        xor     a0, a1, a0\n"
+                          "        sltu    a0, x0, a0\n"},
+        {AST::BinOp::XOR, "        xor     a0, a1, a0\n"
+                          "        sltu    a0, x0, a0\n"},
+        {AST::BinOp::BSL, "        sll     a0, a1, a0\n"},
+        {AST::BinOp::BSR, "        sra     a0, a1, a0\n"}};
 
     if (auto cast = dynamic_cast<AST::DefFun *>(ast)) {
         this->offsetFP = 0;
         this->varOffsetMap = {};
         int pos = 16;
-        for (int i = cast->argNames.size()-1; i >= 0; i--) {
+        for (int i = cast->argNames.size() - 1; i >= 0; i--) {
             varOffsetMap[cast->argNames.at(i)] = std::make_pair(cast->argTypes.at(i), pos);
             pos += 8;
         }
         this->builder << "_" << cast->name << ":\n"
-                         "        addi    sp, sp, -16\n"
+                      << "        addi    sp, sp, -16\n"
                          "        sd      ra, 0(sp)\n"       // store ra
                          "        sd      fp, 8(sp)\n"       // store caller->fp
                          "        add     fp, zero, sp\n\n"; // init callee->fp
@@ -52,13 +81,13 @@ void Compiler::compile(AST::Expression *ast) {
                          "        add     sp, zero, fp\n" // dealloc sp
                          "        ld      ra, 0(sp)\n"
                          "        ld      fp, 8(sp)\n"
-                         "        addi    sp, sp, " << pos << "\n"
-                         "        ret\n";
+                      << "        addi    sp, sp, " << pos << "\n"
+                      << "        ret\n";
     } else if (auto cast = dynamic_cast<AST::RefFun *>(ast)) {
         // spill args
         for (int i = 0; i < cast->arguments.size(); i++) {
             compile(cast->arguments.at(i));
-            this->builder << "        addi    sp, sp, -8\n"   // assume 8 bytes for now
+            this->builder << "        addi    sp, sp, -8\n" // assume 8 bytes for now
                              "        sd      a0, 0(sp)\n";
         }
         this->builder << "        jal     ra, _" << cast->name << "\n";
@@ -74,12 +103,22 @@ void Compiler::compile(AST::Expression *ast) {
             upper++;
             lower -= 0x1000;
         }
-        if (upper != 0) {
+
+        if (upper == 0) {
+            this->builder << "        addi    a0, zero, " << lower << "\n";
+        } else if (lower == 0) {
             this->builder << "        lui     a0, " << (upper & 0xFFFFF) << "\n";
+        } else {
+            this->builder << "        lui     a0, " << (upper & 0xFFFFF) << "\n";
+            this->builder << "        addi    a0, a0, " << lower << "\n";
         }
-        if (lower != 0 || lower == 0 && upper == 0) {
-            this->builder << "        addi    a0, zero, " << (lower & 0xFFF) << "\n";
-        }
+
+        // if (upper != 0 || lower == 0 || upper == 0 && lower == 0) {
+        //     this->builder << "        lui     a0, " << (upper & 0xFFFFF) << "\n";
+        // }
+        // if (lower != 0) {
+        //     this->builder << "        addi    a0, a0, " << lower << "\n";
+        // }
     } else if (auto cast = dynamic_cast<AST::Bin *>(ast)) {
         // todo: make other binops later
         // more todo: use reg alloc
@@ -89,8 +128,8 @@ void Compiler::compile(AST::Expression *ast) {
                          "        sd      a0, 0(sp)\n";
         compile(cast->right);
         this->builder << "        ld      a1, 0(sp)\n"
-                         "        addi    sp, sp, 8\n"
-                         "        add     a0, a1, a0\n";
+                         "        addi    sp, sp, 8\n";
+        this->builder << binOpToIns[cast->op];
     } else if (auto cast = dynamic_cast<AST::DefVar *>(ast)) {
 
         int size = dataTypeToSize[cast->dataType];
@@ -119,8 +158,25 @@ void Compiler::compile(AST::Expression *ast) {
         compile(cast->value);
         this->builder << "        ld      a1, 0(sp)\n"
                          "        addi    sp, sp, 8\n"
-                         "        "
-                      << storeIns << "      a0, 0(a1)\n";
+                      << "        " << storeIns << "      a0, 0(a1)\n";
+    } else if (auto cast = dynamic_cast<AST::Cond *>(ast)) {
+        std::string end = newUniqueLabel();
+        int startSP = offsetFP;
+        for (int i = 0; i < cast->conds.size(); i++) {
+            compile(cast->conds.at(i));
+            if (i == cast->conds.size() - 1) {
+                this->builder << "        beq     a0, zero, " << end << "\n";
+                compile(cast->thens.at(i));
+            } else {
+                std::string next = newUniqueLabel();
+                this->builder << "        beq     a0, zero, " << next << "\n";
+                compile(cast->thens.at(i));
+                this->builder << "        j       " << end << "\n"
+                              << next << ":\n";
+            }
+            this->builder << "        addi    sp, sp, " << (offsetFP - startSP) << "\n";
+        }
+        this->builder << end << ":\n";
     }
 }
 

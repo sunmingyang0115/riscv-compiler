@@ -36,11 +36,12 @@ void printAST(AST::Expression* e) {
         for (int i = 0; i < ast->conds.size(); i++) {
             std::cout << "[";
             printAST(ast->conds.at(i));
+            std::cout << " ";
             printAST(ast->thens.at(i));
+            std::cout << "]";
             if (ast->conds.back() != ast->conds.at(i)) {
                 std::cout << " ";
             }
-            std::cout << "]";
         }
         std::cout << ")";
     } else if (AST::RefVar* ast = dynamic_cast<AST::RefVar *>(e)) {
@@ -72,7 +73,7 @@ void printAST(AST::Expression* e) {
         printAST(ast->value);
         std::cout << ")";
     } else if (AST::RefFun * ast = dynamic_cast<AST::RefFun* >(e)) {
-        std::cout << "(" << ast->name;
+        std::cout << "(" << ast->name << " ";
         for (int i = 0; i < ast->arguments.size(); i++) {
             if (ast->arguments.back() != ast->arguments.at(i)) {
                 std::cout << " ";
