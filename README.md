@@ -7,7 +7,15 @@ A riscv64 compiler for a s-expression based language with c-like functions, poin
 Coming soon...
 
 ## Build Instructions
-    $ git clone https://github.com/sunmingyang0115/riscv-compiler
+    $ git clone https://github.com/sunmingyang0115/riscv-compiler/tree/reg
     $ cd riscv-compiler
     $ cmake . .  
     $ make
+
+This will generate a compiler file.
+Usage:
+
+    $ ./compiler [target] [compiled file]
+
+## Examples
+Coming soon...
