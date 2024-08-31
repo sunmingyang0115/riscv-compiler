@@ -60,20 +60,19 @@ void Compiler::compile(AST::Expression *ast) {
                           "        sltu    a0, x0, a0\n"},
         {AST::BinOp::BSL, "        sll     a0, a1, a0\n"},
         {AST::BinOp::BSR, "        sra     a0, a1, a0\n"}};
-    
+
     if (auto cast = dynamic_cast<AST::Export *>(ast)) {
         if (!cast->datas.empty()) {
             this->builder << "        .global ";
             for (int i = 0; i < cast->datas.size(); i++) {
                 this->builder << "_" << cast->datas.at(i);
-                if (i != cast->datas.size()-1) {
+                if (i != cast->datas.size() - 1) {
                     this->builder << ", ";
                 }
             }
             this->builder << "\n";
         }
-    }
-    else if (auto cast = dynamic_cast<AST::DefFun *>(ast)) {
+    } else if (auto cast = dynamic_cast<AST::DefFun *>(ast)) {
         this->offsetFP = 0;
         this->varOffsetMap = {};
         int pos = 16;

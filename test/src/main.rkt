@@ -1,37 +1,12 @@
 (export main)
 
-(int (isPrime [int a])
-    (int ret)
-    (cond
-        [(= a 1) (set ret 0)]
-        [1
-            (int i)
-            (set ret 1)
-            (set i 2)
-                (while (and ret (<= (* i i) a))
-                    (cond
-                        [(= (% a i) 0)
-                            (set ret 0)])
-                            (set i (+ i 1)))])
-    ret)
-
-(int (getNPrime [int n])
-    (int ret)
-    (int c)
-    (int i)
-    (set ret -1)
-    (set c 0)
-    (set i 1)
-    (while (< c n)
-        (cond
-            [(isPrime i)
-                
-                (set c (+ c 1)) 
-                (set ret i)])
-        (set i (+ i 1)))
-    ret)
 
 (int (main)
-    (print (getNPrime 27))
+    (long n)
+    (set n (number_new 12))
+    (println (number_get n))
+    (number_set n 4)
+    (println (number_get n))
+    (number_del n)
     0)
 
