@@ -1,59 +1,105 @@
+#include "parser/Parser.hh"
 #include <iostream>
 #include <memory>
-#include "lexer/Parser.hh"
 #include <sstream>
-#include "ast/Expressions.hh"
+#include "codegen/CodeGen.hh"
 #include <fstream>
-#include "visitors/StringVisitor.hh"
-#include "visitors/CompileVisitor.hh"
-#include "lexer/Tokenizer.hh"
-#include "visitors/AsmBuilder.hh"
 
-
-
-int main(int argc, char *argv[])
-{
-    
-    std::string path;
-    for (int i = 1; i < argc; i++) {
-        std::string arg = argv[i];
-        if (arg == "-f")
-        {
-            path = argv[++i];
+void printAST(AST::Expression* e) {
+    if (AST::Do* ast = dynamic_cast<AST::Do *>(e)) {
+        std::cout << "(do ";
+        for (AST::Expression* exprs : ast->expressions) {
+            printAST(exprs);
+            if (ast->expressions.back() != exprs) {
+                std::cout << " ";
+            }
         }
+        std::cout << ")";
+    } else if (AST::Literal* ast = dynamic_cast<AST::Literal *>(e)) {
+        std::cout << "(lit " << ast->value << ")";
+    } else if (AST::DeRef* ast = dynamic_cast<AST::DeRef *>(e)) {
+        std::cout << "(deref " << ast->refTo << " ";
+        printAST(ast->data);
+        std::cout << ")";
+    } else if (AST::AddrOf* ast = dynamic_cast<AST::AddrOf *>(e)) {
+        std::cout << "(addrOf ";
+        printAST(ast->data);
+        std::cout << ")";
+    } else if (AST::While* ast = dynamic_cast<AST::While *>(e)) {
+        std::cout << "(while ";
+        printAST(ast->cond);
+        std::cout << " ";
+        printAST(ast->body);
+        std::cout << ")";
+    } else if (AST::Cond* ast = dynamic_cast<AST::Cond *>(e)) {
+        std::cout << "(cond ";
+        for (int i = 0; i < ast->conds.size(); i++) {
+            std::cout << "[";
+            printAST(ast->conds.at(i));
+            std::cout << " ";
+            printAST(ast->thens.at(i));
+            std::cout << "]";
+            if (ast->conds.back() != ast->conds.at(i)) {
+                std::cout << " ";
+            }
+        }
+        std::cout << ")";
+    } else if (AST::RefVar* ast = dynamic_cast<AST::RefVar *>(e)) {
+        std::cout << "(ref " << ast->name << ")";
+    } else if (AST::DefFun *ast = dynamic_cast<AST::DefFun *>(e)) {
+        std::cout << "(def-fun " << ast->returnType << " " << ast->name << " [";
+        for (int i = 0; i < ast->argNames.size(); i++) {
+            std::cout << "(" << ast->argTypes.at(i) << " " << ast->argNames.at(i) << ")";
+            if (ast->argNames.back() != ast->argNames.at(i)) {
+                std::cout << " ";
+            }
+        }
+        std::cout << "] ";
+        printAST(ast->body);
+        std::cout << ")";
     }
-    std::ifstream file{path};
-    if (!file.is_open())
-    {
-        std::cerr << "Failed to open " << path << "\n";
-        return 1;
+    else if (AST::DefVar *ast = dynamic_cast<AST::DefVar *>(e)) {
+        std::cout << "(def-var " << ast->dataType << " " << ast->name << ")";
+    } else if (AST::Bin *ast = dynamic_cast<AST::Bin *>(e)) {
+        std::cout << "(bin " << ast->op << " ";
+        printAST(ast->left);
+        std::cout << " ";
+        printAST(ast->right);
+        std::cout << ")";
+    } else if (AST::Set *ast = dynamic_cast<AST::Set *>(e)) {
+        std::cout << "(set ";
+        printAST(ast->data);
+        std::cout << " ";
+        printAST(ast->value);
+        std::cout << ")";
+    } else if (AST::RefFun * ast = dynamic_cast<AST::RefFun* >(e)) {
+        std::cout << "(" << ast->name << " ";
+        for (int i = 0; i < ast->arguments.size(); i++) {
+            if (ast->arguments.back() != ast->arguments.at(i)) {
+                std::cout << " ";
+            }
+            printAST(ast->arguments.at(i));
+        }
+        std::cout << ")";
     }
-    std::stringstream ss;
-    std::string line;
-    while (getline(file, line)) {
-        ss << line << "\n";
+    else {
+        std::cout << "[nil]";
     }
-    file.close();
-    
-    Parser parser{ss.str()};
-    Expression* e = parser.build();
-    // std::vector<Expression *> v;
-    // v.push_back(new Literal(5));
-    // v.push_back(new Literal(2));
-    // Expression *e = new BinOp(BinOp::Operator::DIVIDE, v);
-
-    if (e == nullptr) {
-        std::cerr << "syntax error\n";
-        return 1;
-    }
-
-    std::unique_ptr<StringVisitor> s = std::make_unique<StringVisitor>();
-    e->accept(s.get());
-    std::cout << s.get()->getString() << "\n";
-
-    std::unique_ptr<CompileVisitor> comp = std::make_unique<CompileVisitor>();
-    e->accept(comp.get());
-    comp.get()->finishCompile("out.s");
-
-    delete e;
 }
+
+int main(int argc, char *argv[]) {
+    // std::cout << argv[1] << " " << argv[2] << "\n";
+
+    std::ifstream t{argv[1]};
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    std::string s = "(do "+buffer.str()+")";
+    
+    AST::Expression* exp = parse(s);
+    // printAST(exp);
+    // std::cout << "\n";
+    compile(argv[2], exp);
+    delete exp;
+
+}
+
