@@ -20,11 +20,11 @@
 (int (hb_getEnd [int addr])
     (+ addr int^(hb_toRealAddr addr)))
 
-(int (hb_coreDump [int addr1] [int addr2])  ;
+(int (hb_coreDump [int addr1] [int addr2])
     (int i) (set i addr1)
     (while (<= i addr2)
         (print i)
-        (println (% long^(hb_toRealAddr i) 256))
+        (println (% int^(hb_toRealAddr i) 256))
         (set i (+ i 1))))
 
 (int (hb_heapSize)
@@ -125,7 +125,34 @@
     (hb_setNext cur next)
 
     ; technically thats it, however we want to coalesce to prevent fragmentation
+
+
+
+    
+    #|          |===| <- cur node
+    cur size  { |   |
+    header    { |===| <- next node
+    next size { |   |
+    |#
+
+    (print prev) (print cur) (println next)
+    (print (hb_getEnd prev)) (print (hb_getEnd cur)) (println (hb_getEnd next))
+
+    (cond
+        [(= (hb_getEnd cur) next)
+            (hb_setSize cur (+ 8 (+ (hb_getSize cur) (hb_getSize next))))
+            (hb_setNext cur (hb_getNext next))])
+    
+    #|  case 1 but cur = prev; next = cur
+        make sure we dont coalesce the dummy
+    |#
+
+    (cond
+        [(and (!= prev 0) (= (hb_getEnd prev) cur))
+            (hb_setSize prev (+ 8 (+ (hb_getSize prev) (hb_getSize cur))))
+            (hb_setNext prev (hb_getNext cur))])
     0)
+    
 
 (int (fr_findNearByRegion [long prevPtr] [long nextPtr] [int pos])
 
@@ -153,19 +180,32 @@
 #|=======================debugging===================|#
 
 (int (test)
-    (hb_coreDump 0 32)
-    (println (malloc 100))
-    (long a) (set a (malloc 1))
-    (println a)
-    (println (malloc 1))
-    (println (malloc 1))
+    ; (hb_coreDump 0 32)
+    ; (println (malloc 100))
+    ; (long a) (set a (malloc 1))
+    ; (println a)
+    ; (println (malloc 1))
+    ; (println (malloc 1))
 
+    ; (free a)
+    ; (hb_coreDump 0 32)
+    ; (malloc 1)
+    ; (hb_coreDump 0 64) (println 1)
+    (long a)
+    (long b)
+    (long c)
+
+    (set a (malloc 1))
+    (set b (malloc 1))
+    (set c (malloc 1))
+    ; (hb_coreDump 0 32)(println 2)
     (free a)
-    (hb_coreDump 0 32)
-    (malloc 1)
+    (free c)
+    ; (hb_coreDump 0 32)(println 3)
+    (free b)
     
 
     ; (println (- (hb_heapSize) hbBlock))
-    (hb_coreDump 0 32)
+    (hb_coreDump 0 64)(println 4)
 
     0)

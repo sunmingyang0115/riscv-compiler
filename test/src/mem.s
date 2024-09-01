@@ -176,7 +176,7 @@ _L1:
         addi    sp, sp, -8
         sd      a0, 0(sp)
         jal     ra, _hb_toRealAddr
-        ld    a0, 0(a0)
+        lw    a0, 0(a0)
         addi    sp, sp, -8
         sd      a0, 0(sp)
         addi    a0, zero, 256
@@ -586,6 +586,151 @@ _free:
         addi    sp, sp, -8
         sd      a0, 0(sp)
         jal     ra, _hb_setNext
+        lw      a0, -8(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _print
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _print
+        lw      a0, -12(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _println
+        lw      a0, -8(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getEnd
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _print
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getEnd
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _print
+        lw      a0, -12(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getEnd
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _println
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getEnd
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -12(fp)
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        xor     a0, a1, a0
+        sltiu   a0, a0, 1
+        beq     a0, zero, _L10
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        addi    a0, zero, 8
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getSize
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -12(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getSize
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        add     a0, a1, a0
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        add     a0, a1, a0
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_setSize
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -12(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getNext
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_setNext
+        addi    sp, sp, 0
+_L10:
+        lw      a0, -8(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        addi    a0, zero, 0
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        xor     a0, a1, a0
+        sltu    a0, x0, a0
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -8(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getEnd
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -4(fp)
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        xor     a0, a1, a0
+        sltiu   a0, a0, 1
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        and     a0, a1, a0
+        sltu    a0, zero, a0
+        beq     a0, zero, _L11
+        lw      a0, -8(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        addi    a0, zero, 8
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -8(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getSize
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getSize
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        add     a0, a1, a0
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        add     a0, a1, a0
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_setSize
+        lw      a0, -8(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        lw      a0, -4(fp)
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_getNext
+        addi    sp, sp, -8
+        sd      a0, 0(sp)
+        jal     ra, _hb_setNext
+        addi    sp, sp, 0
+_L11:
         addi    a0, zero, 0
 
         add     sp, zero, fp
@@ -613,7 +758,7 @@ _fr_findNearByRegion:
         ld      a1, 0(sp)
         addi    sp, sp, 8
         sw      a0, 0(a1)
-_L10:
+_L12:
         ld      a0, 24(fp)
         lw    a0, 0(a0)
         addi    sp, sp, -8
@@ -622,7 +767,7 @@ _L10:
         ld      a1, 0(sp)
         addi    sp, sp, 8
         slt     a0, a1, a0
-        beq     a0, zero, _L11
+        beq     a0, zero, _L13
         ld      a0, 32(fp)
         addi    sp, sp, -8
         sd      a0, 0(sp)
@@ -643,8 +788,8 @@ _L10:
         addi    sp, sp, 8
         sw      a0, 0(a1)
         addi    sp, sp, 0
-        j       _L10
-_L11:
+        j       _L12
+_L13:
         addi    a0, zero, 0
 
         add     sp, zero, fp
@@ -730,22 +875,30 @@ _test:
         sd      fp, 8(sp)
         add     fp, zero, sp
 
-        addi    a0, zero, 0
+        addi    sp, sp, -8
+        addi    sp, sp, -8
+        addi    sp, sp, -8
+        addi    a0, fp, -8
         addi    sp, sp, -8
         sd      a0, 0(sp)
-        addi    a0, zero, 32
-        addi    sp, sp, -8
-        sd      a0, 0(sp)
-        jal     ra, _hb_coreDump
-        addi    a0, zero, 100
+        addi    a0, zero, 1
         addi    sp, sp, -8
         sd      a0, 0(sp)
         jal     ra, _malloc
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        sd      a0, 0(a1)
+        addi    a0, fp, -16
         addi    sp, sp, -8
         sd      a0, 0(sp)
-        jal     ra, _println
+        addi    a0, zero, 1
         addi    sp, sp, -8
-        addi    a0, fp, -8
+        sd      a0, 0(sp)
+        jal     ra, _malloc
+        ld      a1, 0(sp)
+        addi    sp, sp, 8
+        sd      a0, 0(a1)
+        addi    a0, fp, -24
         addi    sp, sp, -8
         sd      a0, 0(sp)
         addi    a0, zero, 1
@@ -758,43 +911,26 @@ _test:
         ld      a0, -8(fp)
         addi    sp, sp, -8
         sd      a0, 0(sp)
-        jal     ra, _println
-        addi    a0, zero, 1
+        jal     ra, _free
+        ld      a0, -24(fp)
         addi    sp, sp, -8
         sd      a0, 0(sp)
-        jal     ra, _malloc
-        addi    sp, sp, -8
-        sd      a0, 0(sp)
-        jal     ra, _println
-        addi    a0, zero, 1
-        addi    sp, sp, -8
-        sd      a0, 0(sp)
-        jal     ra, _malloc
-        addi    sp, sp, -8
-        sd      a0, 0(sp)
-        jal     ra, _println
-        ld      a0, -8(fp)
+        jal     ra, _free
+        ld      a0, -16(fp)
         addi    sp, sp, -8
         sd      a0, 0(sp)
         jal     ra, _free
         addi    a0, zero, 0
         addi    sp, sp, -8
         sd      a0, 0(sp)
-        addi    a0, zero, 32
+        addi    a0, zero, 64
         addi    sp, sp, -8
         sd      a0, 0(sp)
         jal     ra, _hb_coreDump
-        addi    a0, zero, 1
+        addi    a0, zero, 4
         addi    sp, sp, -8
         sd      a0, 0(sp)
-        jal     ra, _malloc
-        addi    a0, zero, 0
-        addi    sp, sp, -8
-        sd      a0, 0(sp)
-        addi    a0, zero, 32
-        addi    sp, sp, -8
-        sd      a0, 0(sp)
-        jal     ra, _hb_coreDump
+        jal     ra, _println
         addi    a0, zero, 0
 
         add     sp, zero, fp
